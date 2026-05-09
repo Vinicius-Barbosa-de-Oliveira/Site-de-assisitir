@@ -1,29 +1,52 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/sections/Hero"
-import Footer from "@/components/Footer";
+import Hero from "@/components/hero";
+
+import TrendingSection from "@/sections/TrendingSection";
+
 import LatestEpisodes from "@/sections/LatestEpisodes";
-import Popular from "@/sections/Popular";
-import Categories from "@/sections/Categories";
+
+import {
+  getAllDramas,
+  getLatestEpisodes,
+} from "@/lib/data";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import ContinueWatching from "@/sections/ContinueWatching";
 import HomeSchedule from "@/sections/HomeSchedule";
+import Popular from "@/sections/Popular";
+import Categories from "@/sections/Categories";
+import Recommended from "@/sections/Recommended";
 
-export default function Home() {
+export default async function Home() {
+
+  const dramas = await getAllDramas();
+
+  const latestEpisodes =
+    await getLatestEpisodes();
+
   return (
-    <main className="bg-[#0F0F14] min-h-screen text-white">
-      
+    <main className="min-h-screen bg-[#07070A] text-white">
+
       <Navbar />
 
-      <Hero />
+      <div className="px-6 md:px-12 py-10 space-y-16">
 
-      <LatestEpisodes />
+        <Hero drama={dramas[0]} />
 
-      <Popular />
+        <TrendingSection dramas={dramas} />
 
-      <Categories />
+        <Categories />
 
-      <ContinueWatching />
+        <LatestEpisodes dramas={latestEpisodes} />
 
-      <HomeSchedule />
+        <ContinueWatching dramas={dramas} />
+
+        <Popular dramas={dramas} />
+
+        <Recommended dramas={dramas} />
+
+        <HomeSchedule dramas={dramas} />
+
+      </div>
 
       <Footer />
 

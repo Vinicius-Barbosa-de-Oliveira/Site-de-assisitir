@@ -3,22 +3,22 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import EpisodeCard from "@/components/EpisodeCard";
+import DramaCard from "@/components/DramaCard";
 
 interface Props {
   dramas: any[];
 }
 
-export default function LatestEpisodes({
+export default function TrendingSection({
   dramas,
 }: Props) {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-20 space-y-6">
+    <section className="space-y-4">
 
       <div className="flex items-center justify-between">
 
         <h2 className="text-3xl font-bold">
-          Últimos Episódios
+          Populares da Semana
         </h2>
 
       </div>
@@ -29,13 +29,16 @@ export default function LatestEpisodes({
         spaceBetween={20}
         breakpoints={{
           320: {
-            slidesPerView: 1.1,
+            slidesPerView: 1.2,
           },
-          768: {
-            slidesPerView: 2.1,
+          640: {
+            slidesPerView: 2.2,
           },
-          1200: {
-            slidesPerView: 3.2,
+          1024: {
+            slidesPerView: 4.2,
+          },
+          1400: {
+            slidesPerView: 5.2,
           },
         }}
       >
@@ -44,7 +47,7 @@ export default function LatestEpisodes({
 
           <SwiperSlide key={drama.id}>
 
-            <EpisodeCard drama={drama} />
+            <DramaCard drama={drama} />
 
           </SwiperSlide>
 

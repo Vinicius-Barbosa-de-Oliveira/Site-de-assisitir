@@ -1,10 +1,10 @@
-type Props = {
-  number: number;
-};
+interface Props {
+  drama: any;
+}
 
-export default function EpisodeCard({ number }: Props) {
+export default function EpisodeCard({ drama }: Props) {
   return (
-    <div className="bg-[#18181F] hover:bg-[#202028] transition rounded-2xl p-4">
+    <div className="bg-[#18181F] hover:bg-[#202028] transition rounded-3xl p-4">
       
       <div className="flex items-center gap-4">
         
@@ -13,7 +13,7 @@ export default function EpisodeCard({ number }: Props) {
         <div className="flex-1 cursor-pointer">
           
           <h3 className="font-semibold">
-            Episódio {number}
+            Episódio {drama.number}
           </h3>
 
           <p className="text-zinc-400 text-sm mt-2">

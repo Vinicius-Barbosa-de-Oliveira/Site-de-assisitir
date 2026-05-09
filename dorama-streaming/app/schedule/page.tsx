@@ -1,208 +1,200 @@
-    import Link from "next/link";
+import Link from "next/link";
+import Image from "next/image";
 
-    import Navbar from "@/components/Navbar";
-    import Footer from "@/components/Footer";
+import { getAllDramas } from "@/lib/data";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 
-    import { dramas } from "@/data/dramas";
+const weekDays = [
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
+  "Domingo",
+];
 
-    const weekDays = [
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
-    "Domingo",
-    ];
+export default async function SchedulePage() {
 
-    export default function SchedulePage() {
+  const dramas = await getAllDramas();
 
-    return (
-        <main className="bg-[#0F0F14] min-h-screen text-white">
+  return (
+    <main className="min-h-screen bg-[#07070A] text-white">
 
-        <Navbar />
+      <Navbar />
 
-        {/* HERO */}
+      <div className="flex items-start justify-between mb-14">
 
-        <section className="relative overflow-hidden border-b border-white/10">
+        <div>
 
-            <div className="absolute inset-0 bg-linear-to-r from-purple-500/20 to-transparent" />
+          <h1 className="text-5xl font-black text-white">
+            Calendário Semanal
+          </h1>
 
-                <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
+          <p className="text-zinc-400 mt-3">
+            Próximos lançamentos da semana
+          </p>
 
-                <span className="bg-purple-500 px-4 py-2 rounded-full text-sm">
-                    lançamentos
-                </span>
+        </div>
 
-                <h1 className="text-6xl font-black mt-6">
-                    Calendário Semanal
-                </h1>
+        <Link
+          href="/"
+          className="text-purple-400 hover:text-purple-300 transition"
+        >
+          Voltar
+        </Link>
 
-                <p className="text-zinc-400 text-lg mt-6 max-w-2xl">
-                    Fique por dentro de todos os lançamentos e nunca perca um episódio.
-                </p>
+      </div>
 
-            </div>
+      {/* DAYS */}
 
-        </section>
+      <div className="space-y-20">
 
-        {/* CALENDAR */}
+        {weekDays.map((day) => {
 
-        <section className="max-w-7xl mx-auto px-6 py-16">
+          const dayDramas = dramas.filter(
+            (drama: any) =>
+              drama.scheduleDay === day
+          );
 
-            <div className="space-y-20">
+          if (dayDramas.length === 0)
+            return null;
 
-            {weekDays.map((day) => {
+          return (
 
-                const dayDramas = dramas.filter(
-                (drama) =>
-                    drama.schedule.day === day
-                );
+            <section key={day}>
 
-                if (dayDramas.length === 0)
-                return null;
+              {/* DAY TITLE */}
 
-                return (
+              <div className="flex items-center gap-4 mb-8">
 
-                <div key={day}>
+                <div className="w-2 h-10 rounded-full bg-purple-500" />
 
-                    {/* DAY */}
+                <div>
 
-                    <div className="flex items-center gap-4 mb-10">
+                  <h2 className="text-4xl font-bold text-white">
+                    {day}
+                  </h2>
 
-                    <div className="w-3 h-12 bg-purple-500 rounded-full" />
-
-                    <h2 className="text-4xl font-bold">
-                        {day}
-                    </h2>
-
-                    </div>
-
-                    {/* GRID */}
-
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-
-                    {dayDramas.map((drama) => (
-
-                        <Link
-                        key={drama.id}
-                        href={`/drama/${drama.id}`}
-                        className="group"
-                        >
-
-                        <div className="bg-[#18181F] border border-white/5 rounded-3xl overflow-hidden hover:border-purple-500/50 transition">
-
-                            {/* IMAGE */}
-
-                            <div className="relative h-105 overflow-hidden">
-
-                            <img
-                                src={drama.image}
-                                alt={drama.title}
-                                className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                            />
-
-                            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
-
-                            {/* TIME */}
-
-                            <div className="absolute top-4 right-4 bg-purple-500 px-4 py-2 rounded-full text-sm font-bold">
-
-                                {drama.schedule.time}
-
-                            </div>
-
-                            {/* STATUS */}
-
-                            <div className="absolute bottom-4 left-4">
-
-                                <span className="bg-black/50 backdrop-blur-xl px-4 py-2 rounded-full text-sm">
-
-                                EP {drama.latestEpisode.number}
-
-                                </span>
-
-                            </div>
-
-                            </div>
-
-                            {/* CONTENT */}
-
-                            <div className="p-6">
-
-                            <div className="flex items-start justify-between gap-4">
-
-                                <div>
-
-                                <h3 className="text-2xl font-bold">
-
-                                    {drama.title}
-
-                                </h3>
-
-                                <p className="text-zinc-400 mt-2 text-sm">
-
-                                    {drama.country} • {drama.year}
-
-                                </p>
-
-                                </div>
-
-                                <div className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-xl text-sm font-semibold">
-
-                                ⭐ {drama.rating}
-
-                                </div>
-
-                            </div>
-
-                            {/* GENRES */}
-
-                            <div className="flex flex-wrap gap-2 mt-5">
-
-                                {drama.category.map((item) => (
-
-                                <span
-                                    key={item}
-                                    className="bg-black/20 px-3 py-2 rounded-xl text-sm text-zinc-300"
-                                >
-                                    {item}
-                                </span>
-
-                                ))}
-
-                            </div>
-
-                            {/* SYNOPSIS */}
-
-                            <p className="text-zinc-400 text-sm leading-relaxed mt-5 line-clamp-3">
-
-                                {drama.synopsis}
-
-                            </p>
-
-                            </div>
-
-                        </div>
-
-                        </Link>
-
-                    ))}
-
-                    </div>
+                  <p className="text-zinc-500 text-sm mt-1">
+                    {dayDramas.length} doramas lançando
+                  </p>
 
                 </div>
 
-                );
+              </div>
 
-            })}
+              {/* GRID */}
 
-            </div>
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
 
-        </section>
+                {dayDramas.map((drama: any) => {
 
-        <Footer />
+                  const latestEpisode =
+                    drama.episodes?.[
+                      drama.episodes.length - 1
+                    ];
 
-        </main>
-    );
-    }
+                  return (
+
+                    <Link
+                      key={drama.id}
+                      href={`/drama/${drama.slug}`}
+                      className="group"
+                    >
+
+                      <div className="relative h-105 overflow-hidden rounded-3xl border border-white/5 bg-zinc-900">
+
+                        {/* IMAGE */}
+
+                        <Image
+                          src={drama.bannerImage}
+                          alt={drama.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition duration-500"
+                        />
+
+                        {/* OVERLAY */}
+
+                        <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
+
+                        {/* CONTENT */}
+
+                        <div className="absolute inset-0 p-7 flex flex-col justify-between">
+
+                          {/* TOP */}
+
+                          <div className="flex items-start justify-between">
+
+                            <span className="bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+
+                              {day}
+
+                            </span>
+
+                            <span className="text-sm font-semibold text-purple-300">
+
+                              {drama.scheduleTime}
+
+                            </span>
+
+                          </div>
+
+                          {/* BOTTOM */}
+
+                          <div>
+
+                            <h2 className="text-4xl font-black leading-tight text-white group-hover:text-purple-300 transition">
+
+                              {drama.title}
+
+                            </h2>
+
+                            <p className="text-zinc-300 mt-4 line-clamp-3 text-sm leading-relaxed">
+
+                              {drama.description}
+
+                            </p>
+
+                            <div className="flex items-center justify-between mt-8">
+
+                              <span className="text-zinc-300 font-semibold">
+
+                                EP {latestEpisode?.number}
+
+                              </span>
+
+                              <span className="text-yellow-400 font-bold">
+
+                                ⭐ {drama.rating}
+
+                              </span>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </Link>
+
+                  );
+                })}
+
+              </div>
+
+            </section>
+
+          );
+        })}
+
+      </div>
+
+      <Footer />
+
+    </main>
+  );
+}

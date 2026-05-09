@@ -1,33 +1,55 @@
+"use client";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+
 import DramaCard from "@/components/DramaCard";
-import { dramas } from "@/data/dramas";
 
-export default function Popular() {
+interface Props {
+  dramas: any[];
+}
+
+export default function Popular({
+  dramas,
+}: Props) {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-16">
-      
-      <div className="flex items-center justify-between mb-8">
-        
-        <h2 className="text-3xl font-bold">
-          Populares da Semana
-        </h2>
+    <section className="space-y-4">
 
-        <button className="text-purple-400">
-          Explorar
-        </button>
+      <h2 className="text-3xl font-bold">
+        Mais Populares
+      </h2>
 
-      </div>
+      <Swiper
+        modules={[Navigation]}
+        navigation
+        spaceBetween={20}
+        breakpoints={{
+          320: {
+            slidesPerView: 1.2,
+          },
+          640: {
+            slidesPerView: 2.2,
+          },
+          1024: {
+            slidesPerView: 4.2,
+          },
+          1400: {
+            slidesPerView: 5.2,
+          },
+        }}
+      >
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {dramas.map((drama) => (
-            <DramaCard
-            key={drama.id}
-            id={drama.id}
-            title={drama.title}
-            image={drama.image}
-            episode={drama.episode}
-            />
+
+          <SwiperSlide key={drama.id}>
+
+            <DramaCard drama={drama} />
+
+          </SwiperSlide>
+
         ))}
-      </div>
+
+      </Swiper>
 
     </section>
   );

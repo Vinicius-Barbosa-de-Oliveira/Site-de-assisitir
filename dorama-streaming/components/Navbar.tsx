@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import UserMenu from "@/components/UserMenu";
 
 export default function Navbar() {
 
@@ -108,9 +109,7 @@ export default function Navbar() {
 
           {/* PROFILE */}
 
-          <button className="w-12 h-12 rounded-full bg-purple-500 hover:bg-purple-600 transition font-bold">
-            D
-          </button>
+          <UserMenu />
 
           {/* MOBILE BUTTON */}
 

@@ -1,112 +1,75 @@
 import Link from "next/link";
 
-import { dramas } from "@/data/dramas";
+interface HeroProps {
+  drama: any;
+}
 
-const drama = dramas[0];
+export default function Hero({
+  drama,
+}: HeroProps) {
+  if (!drama) return null;
 
-export default function Hero() {
+  const latestEpisode =
+    drama.episodes?.[0];
+
   return (
-    <section className="relative h-212.5 overflow-hidden">
-
-      {/* BACKGROUND */}
+    <section className="relative h-162.5 overflow-hidden rounded-3xl">
 
       <img
-        src={drama.image}
+        src={drama.bannerImage}
         alt={drama.title}
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* OVERLAY */}
+      <div className="absolute inset-0 bg-linear-to-r from-black via-black/70 to-transparent" />
 
-      <div className="absolute inset-0 bg-black/60" />
-
-      <div className="absolute inset-0 bg-linear-to-r from-[#0F0F14] via-[#0F0F14]/70 to-transparent" />
-
-      <div className="absolute inset-0 bg-linear-to-t from-[#0F0F14] via-transparent to-transparent" />
-
-      {/* CONTENT */}
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 h-full flex items-center">
+      <div className="relative z-10 flex items-end h-full px-10 pb-16">
 
         <div className="max-w-2xl">
 
-          <span className="bg-purple-500 px-4 py-2 rounded-full text-sm font-semibold">
-            🔥 Último Lançamento
+          <span className="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold">
+            NOVO EPISÓDIO
           </span>
 
-          <h1 className="text-7xl font-black leading-tight mt-8">
+          <h1 className="text-6xl font-black mt-6">
             {drama.title}
           </h1>
 
-          <div className="flex flex-wrap gap-3 mt-6">
+          <div className="flex items-center gap-4 mt-4 text-zinc-300">
 
-            {drama.category.map((item) => (
+            <span>{drama.year}</span>
 
-              <span
-                key={item}
-                className="bg-white/10 backdrop-blur-xl px-4 py-2 rounded-xl text-sm"
-              >
-                {item}
-              </span>
+            <span>{drama.country}</span>
 
-            ))}
+            <span>⭐ {drama.rating}</span>
+
+            <span>{drama.status}</span>
 
           </div>
 
-          <p className="text-zinc-300 text-lg leading-relaxed mt-8 max-w-xl">
-            Um romance proibido nasce em meio ao caos político,
-            guerras e disputas entre reinos.
+          <p className="mt-6 text-zinc-300 line-clamp-4">
+            {drama.description}
           </p>
 
-          {/* EP INFO */}
+          {latestEpisode && (
+            <div className="flex gap-4 mt-8">
 
-          <div className="flex flex-wrap gap-6 mt-10">
+              <Link
+                href={`/watch/${drama.slug}/${latestEpisode.number}`}
+                className="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-xl font-bold transition"
+              >
+                Assistir Agora
+              </Link>
 
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-2xl">
-
-              <p className="text-zinc-400 text-sm">
-                Último Episódio
-              </p>
-
-              <h3 className="text-2xl font-bold mt-1">
-                EP {drama.latestEpisode.number}
-              </h3>
-
-            </div>
-
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-2xl">
-
-              <p className="text-zinc-400 text-sm">
-                Lançamento
-              </p>
-
-              <h3 className="text-2xl font-bold mt-1">
-                {drama.latestEpisode.release}
-              </h3>
+              <Link
+                href={`/drama/${drama.slug}`}
+                className="bg-zinc-800 hover:bg-zinc-700 px-8 py-4 rounded-xl font-bold transition"
+              >
+                Ver Detalhes
+              </Link>
 
             </div>
-
-          </div>
-
-          {/* BUTTONS */}
-
-          <div className="flex flex-wrap gap-4 mt-10">
-
-            <Link
-              href={`/watch/${drama.id}/${drama.latestEpisode.number}`}
-              className="bg-purple-500 hover:bg-purple-600 transition px-8 py-4 rounded-2xl font-bold text-lg"
-            >
-              ▶ Assistir Agora
-            </Link>
-
-            <Link
-              href={`/drama/${drama.id}`}
-              className="bg-white/10 hover:bg-white/20 transition px-8 py-4 rounded-2xl font-semibold"
-            >
-              Ver Detalhes
-            </Link>
-
-          </div>
+          )}
 
         </div>
 

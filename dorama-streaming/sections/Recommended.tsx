@@ -1,28 +1,26 @@
 import DramaCard from "@/components/DramaCard";
-import { dramas } from "@/data/dramas";
 
-export default function Recommended() {
+interface Props {
+  dramas: any[];
+}
+
+export default function Recommended({
+  dramas,
+}: Props) {
   return (
-    <section className="max-w-7xl mx-auto px-6 py-16">
-      
-      <div className="flex items-center justify-between mb-8">
-        
-        <h2 className="text-3xl font-bold">
-          Você Também Pode Gostar
-        </h2>
+    <section className="space-y-4">
 
-      </div>
+      <h2 className="text-3xl font-bold">
+        Recomendados
+      </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+
         {dramas.map((drama) => (
-            <DramaCard
+          <DramaCard
             key={drama.id}
-            id={drama.id}
-            title={drama.title}
-            image={drama.image}
-            episode={drama.episode}
-            />
+            drama={drama}
+          />
         ))}
 
       </div>

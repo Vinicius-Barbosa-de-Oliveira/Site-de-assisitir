@@ -1,6 +1,8 @@
 import Link from "next/link";
 
-import { dramas } from "@/data/dramas";
+interface Props {
+  dramas: any[];
+}
 
 const weekDays = [
   "Segunda",
@@ -12,8 +14,9 @@ const weekDays = [
   "Domingo",
 ];
 
-export default function HomeSchedule() {
-
+export default function HomeSchedule({
+  dramas,
+}: Props) {
   return (
     <section className="max-w-7xl mx-auto px-6 py-20">
 
@@ -49,8 +52,7 @@ export default function HomeSchedule() {
         {weekDays.map((day) => {
 
           const dayDramas = dramas.filter(
-            (drama) =>
-              drama.schedule.day === day
+            (drama) => drama.scheduleDay === day
           );
 
           if (dayDramas.length === 0)
@@ -77,49 +79,57 @@ export default function HomeSchedule() {
 
               {/* LIST */}
 
-              <div className="space-y-4">
+              <div className="space-y-6">
 
-                {dayDramas.map((drama) => (
+                {dayDramas.map((drama) => {
 
-                  <Link
-                    key={drama.id}
-                    href={`/watch/${drama.id}/${drama.latestEpisode.number}`}
-                    className="block group"
-                  >
+                  const latestEpisode =
+                    drama.episodes?.[
+                      drama.episodes.length - 1
+                    ];
 
-                    <div className="bg-black/20 hover:bg-purple-500/20 transition rounded-2xl p-4">
+                  return (
 
-                      <div className="flex items-center justify-between gap-4">
+                    <Link
+                      key={drama.id}
+                      href={`/watch/${drama.slug}/${latestEpisode?.number}`}
+                      className="block group"
+                    >
 
-                        <div>
+                      <div className="bg-black/20 hover:bg-purple-500/20 transition rounded-2xl p-4">
 
-                          <h4 className="font-semibold text-white group-hover:text-purple-300 transition">
+                        <div className="flex items-center justify-between gap-4">
 
-                            {drama.title}
+                          <div>
 
-                          </h4>
+                            <h4 className="font-semibold text-white group-hover:text-purple-300 transition">
 
-                          <p className="text-zinc-400 text-sm mt-1">
+                              {drama.title}
 
-                            EP {drama.latestEpisode.number}
+                            </h4>
 
-                          </p>
+                            <p className="text-zinc-400 text-sm mt-1">
+
+                              EP {latestEpisode?.number}
+
+                            </p>
+
+                          </div>
+
+                          <span className="text-purple-400 text-sm font-semibold whitespace-nowrap">
+
+                            {drama.scheduleDay} às {drama.scheduleTime}
+
+                          </span>
 
                         </div>
 
-                        <span className="text-purple-400 text-sm font-semibold whitespace-nowrap">
-
-                          {drama.schedule.time}
-
-                        </span>
-
                       </div>
 
-                    </div>
+                    </Link>
 
-                  </Link>
-
-                ))}
+                  );
+                })}
 
               </div>
 

@@ -198,8 +198,8 @@
                 {filteredDramas.map((drama) => (
 
                 <DramaCard
-                    key={drama.id}
-                    id={drama.id}
+                    key={drama.slug}
+                    id={drama.slug}
                     title={drama.title}
                     image={drama.image}
                     episode={drama.episode}
