@@ -213,9 +213,7 @@ export default async function DramaPage({
       </section>
       <section className="max-w-8xl mx-auto px-6 py-10">
 
-
         <TrendingSection dramas={dramas} />
-
 
       </section>
 
