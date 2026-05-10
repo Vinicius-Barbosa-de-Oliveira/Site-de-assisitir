@@ -1,29 +1,20 @@
 import "./globals.css";
 
-import Provider from "@/providers/SessionProvider";
+export const metadata = {
+  title: "Dorama Streaming",
+  description: "Streaming de doramas",
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
   return (
-
     <html lang="pt-BR">
-
       <body>
-
-        <Provider>
-
-          {children}
-
-        </Provider>
-
+        {children}
       </body>
-
     </html>
-
   );
-
 }
