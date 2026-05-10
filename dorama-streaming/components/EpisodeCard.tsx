@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+
 
 interface Props {
   episode: {
@@ -28,62 +30,52 @@ export default function EpisodeCard({
 
       <div className="bg-[#18181F] border border-white/5 hover:border-purple-500/40 rounded-3xl overflow-hidden transition">
 
-        <div className="flex flex-col md:flex-row">
+        <div className="bg-[#18181F] rounded-3xl overflow-hidden border border-white/5 hover:border-purple-500/40 transition h-80 flex">
 
-          {/* THUMB */}
+        {/* IMAGE */}
 
-          <div className="relative md:w-[320px] h-50 md:h-auto overflow-hidden">
+        <div className="relative w-[320px] min-w-[320px] h-full">
+          <Image
+            src={episode.thumbnail || '/placeholder.png'}
+            alt={episode.title}
+            fill
+            priority
+            className="object-cover"
+          />
+          
+        </div>
 
-            <img
-              src={
-                episode.thumbnail ||
-                "https://placehold.co/600x400"
-              }
-              alt={episode.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-            />
+        {/* CONTENT */}
 
-            <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
+        <div className="flex flex-col justify-between p-8 flex-1">
 
-            <div className="absolute bottom-4 left-4">
+          <div>
 
-              <span className="bg-purple-500 px-3 py-1 rounded-lg text-sm font-semibold">
+            <h2 className="text-3xl font-bold line-clamp-1">
+              Episódio {episode.number}
+            </h2>
 
-                EP {episode.number}
-
-              </span>
-
-            </div>
-
-          </div>
-
-          {/* CONTENT */}
-
-          <div className="flex-1 p-6 flex flex-col justify-center">
-
-            <h3 className="text-2xl font-bold">
-              {episode.title}
-            </h3>
-
-            <p className="text-zinc-400 mt-3">
+            <p className="text-zinc-400 mt-4 line-clamp-2">
               Episódio disponível para assistir.
             </p>
 
-            <div className="flex items-center gap-6 mt-6 text-sm text-zinc-500">
+          </div>
 
-              <span>
-                {episode.duration || 0} min
-              </span>
+          <div className="flex items-center gap-6 text-zinc-500 text-sm">
 
-              <span>
-                Full HD
-              </span>
+            <span>
+              {episode.duration} min
+            </span>
 
-            </div>
+            <span>
+              Full HD
+            </span>
 
           </div>
 
         </div>
+
+      </div>
 
       </div>
 

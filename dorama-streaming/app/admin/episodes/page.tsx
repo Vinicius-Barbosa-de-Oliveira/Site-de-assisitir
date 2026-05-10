@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { deleteEpisode } from "./actions";
 
 import { prisma } from "@/lib/prisma";
 
@@ -164,11 +165,26 @@ export default async function AdminEpisodesPage() {
                     </Link>
 
                     <Link
-                      href={`/admin/episodes/${episode.id}`}
+                      href={`/admin/episodes/edit/${episode.id}`}
                       className="bg-purple-500 hover:bg-purple-600 transition text-center py-4 rounded-2xl font-semibold"
                     >
                       Editar
                     </Link>
+
+                    <form
+                      action={async () => {
+                        "use server";
+
+                        await deleteEpisode(episode.id);
+                      }}
+                    >
+                      <button
+                        type="submit"
+                        className="w-full mt-3 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white transition py-3 rounded-2xl font-semibold"
+                      >
+                        Deletar Episódio
+                      </button>
+                    </form>
 
                   </div>
 

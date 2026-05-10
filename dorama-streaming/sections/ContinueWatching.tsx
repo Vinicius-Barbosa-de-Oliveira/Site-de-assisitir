@@ -34,32 +34,35 @@ export default function ContinueWatching({
             className="group"
           >
 
-            <div className="bg-[#18181F] border border-white/5 hover:border-purple-500/40 rounded-3xl overflow-hidden">
+            <div className="bg-[#18181F] rounded-3xl overflow-hidden border border-white/5 hover:border-purple-500/40 transition h-full flex flex-col">
 
-              <div className="relative h-55 overflow-hidden">
+              <div className="relative aspect-16/10">
 
                 <Image
-                  src={drama.bannerImage}
+                  src={drama.image}
                   alt={drama.title}
                   fill
-                  className="object-cover group-hover:scale-105 transition duration-700"
+                  className="object-cover"
                 />
-
-                <div className="absolute inset-0 bg-black/40" />
 
               </div>
 
-              <div className="p-6">
+              <div className="p-5 flex flex-col flex-1">
 
-                <h3 className="text-2xl font-bold">
+                <h3 className="text-2xl font-bold line-clamp-2 min-h-16">
                   {drama.title}
                 </h3>
 
-                <div className="mt-5">
+                <div className="mt-auto">
 
-                  <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden mt-6">
 
-                    <div className="w-[45%] h-full bg-purple-500 rounded-full" />
+                    <div
+                      className="h-full bg-purple-500 rounded-full"
+                      style={{
+                        width: "45%",
+                      }}
+                    />
 
                   </div>
 

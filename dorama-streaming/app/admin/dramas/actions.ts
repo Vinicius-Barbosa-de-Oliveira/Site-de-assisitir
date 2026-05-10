@@ -94,3 +94,13 @@ export async function updateDrama(
     },
   });
 }
+
+export async function deleteDrama(id: string) {
+
+  await prisma.drama.delete({
+    where: {
+      id,
+    },
+  });
+
+}

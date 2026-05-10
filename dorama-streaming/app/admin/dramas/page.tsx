@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { deleteDrama } from "./actions";
 
 import { prisma } from "@/lib/prisma";
 
@@ -170,11 +171,26 @@ export default async function AdminDramasPage() {
                     </Link>
 
                     <Link
-                      href={`/admin/dramas/${drama.id}`}
+                      href={`/admin/dramas/edit/${drama.id}`}
                       className="bg-purple-500 hover:bg-purple-600 transition text-center py-4 rounded-2xl font-semibold"
                     >
                       Editar
                     </Link>
+
+                    <form
+                      action={async () => {
+                        "use server";
+
+                        await deleteDrama(drama.id);
+                      }}
+                    >
+                      <button
+                        type="submit"
+                        className="w-full mt-3 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white transition py-3 rounded-2xl font-semibold"
+                      >
+                        Deletar
+                      </button>
+                    </form>
 
                   </div>
 
