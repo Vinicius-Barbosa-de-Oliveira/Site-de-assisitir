@@ -31,6 +31,7 @@ model Drama {
   year          Int
   rating        Float
   status        String
+  genres        String[]
 
   scheduleDay   String?
   scheduleTime  String?

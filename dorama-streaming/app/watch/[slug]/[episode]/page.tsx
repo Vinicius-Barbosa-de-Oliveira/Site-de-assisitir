@@ -1,17 +1,19 @@
-import Link from "next/link";
-
-import Navbar from "@/components/Navbar";
-
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 
 import { prisma } from "@/lib/prisma";
 
-interface Props {
+import { notFound } from "next/navigation";
+
+import Link from "next/link";
+import Image from "next/image";
+
+type Props = {
   params: Promise<{
     slug: string;
     episode: string;
   }>;
-}
+};
 
 export default async function WatchPage({
   params,
@@ -20,207 +22,239 @@ export default async function WatchPage({
   const { slug, episode } =
     await params;
 
-  const drama = await prisma.drama.findUnique({
-    where: {
-      slug,
-    },
-    include: {
-      episodes: {
-        orderBy: {
-          number: "asc",
+  const drama =
+    await prisma.drama.findUnique({
+      where: {
+        slug,
+      },
+      include: {
+        episodes: {
+          orderBy: {
+            number: "asc",
+          },
         },
       },
-    },
-  });
+    });
 
   if (!drama) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Dorama não encontrado.
-      </div>
-    );
+    notFound();
   }
 
   const currentEpisode =
     drama.episodes.find(
       (ep) =>
-        ep.number === Number(episode)
+        ep.number.toString() === episode
     );
 
   if (!currentEpisode) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Episódio não encontrado.
-      </div>
-    );
+    notFound();
   }
 
+  const currentIndex =
+    drama.episodes.findIndex(
+      (ep) => ep.id === currentEpisode.id
+    );
+
+  const nextEpisode =
+    drama.episodes[currentIndex + 1];
+
+  const previousEpisode =
+    drama.episodes[currentIndex - 1];
+
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="bg-[#0F0F14] min-h-screen text-white">
 
       <Navbar />
 
-      {/* PLAYER */}
+      <section className="max-w-7xl mx-auto px-4 py-6">
 
-      <section className="w-full">
+        <div className="grid lg:grid-cols-[1fr_380px] gap-6">
 
-        <div className="relative aspect-video bg-zinc-900">
-
-          <iframe
-            src={currentEpisode.videoUrl}
-            className="w-full h-full"
-            allowFullScreen
-          />
-
-        </div>
-
-      </section>
-
-      {/* CONTENT */}
-
-      <section className="max-w-7xl mx-auto px-6 py-10">
-
-        <div className="grid lg:grid-cols-[1fr_350px] gap-10">
-
-          {/* LEFT */}
+          {/* PLAYER */}
 
           <div>
 
-            <div className="flex items-center gap-3 mb-4">
+            <div className="bg-black rounded-3xl overflow-hidden aspect-video relative">
 
-              <span className="bg-purple-500 px-3 py-1 rounded-lg text-sm font-semibold">
-
-                EP {currentEpisode.number}
-
-              </span>
-
-              <span className="text-zinc-400">
-
-                {currentEpisode.duration} min
-
-              </span>
+              <iframe
+                src={currentEpisode.videoUrl}
+                allowFullScreen
+                className="w-full h-full"
+              />
 
             </div>
 
-            <h1 className="text-4xl font-bold mb-4">
+            {/* INFO */}
 
-              {drama.title}
+            <div className="mt-6">
 
-            </h1>
-
-            <h2 className="text-2xl font-semibold mb-6">
-
-              {currentEpisode.title}
-
-            </h2>
-
-            <div className="flex flex-wrap gap-3 mb-8">
-
-              <span className="bg-zinc-900 px-4 py-2 rounded-xl">
-
-                ⭐ {drama.rating}
+              <span className="text-purple-400 text-sm">
+                EPISÓDIO {currentEpisode.number}
               </span>
 
-              <span className="bg-zinc-900 px-4 py-2 rounded-xl">
+              <h1 className="text-4xl font-bold mt-2">
+                {currentEpisode.title}
+              </h1>
 
-                {drama.year}
+              <p className="text-zinc-400 mt-4 max-w-4xl leading-7">
 
-              </span>
+                {drama.description}
 
-              <span className="bg-zinc-900 px-4 py-2 rounded-xl">
+              </p>
 
-                {drama.country}
+              <div className="flex flex-wrap gap-4 mt-5 text-sm text-zinc-400">
 
-              </span>
+                <span>
+                  ⭐ {drama.rating}
+                </span>
 
-              <span className="bg-zinc-900 px-4 py-2 rounded-xl">
+                <span>
+                  {drama.country}
+                </span>
 
-                {drama.status}
-
-              </span>
-
-            </div>
-
-            <p className="text-zinc-300 leading-8 text-lg">
-
-              {drama.description}
-
-            </p>
-
-          </div>
-
-          {/* RIGHT */}
-
-          <div>
-
-            <div className="bg-[#121218] rounded-3xl p-6 border border-white/5">
-
-              <h3 className="text-2xl font-bold mb-6">
-
-                Episódios
-
-              </h3>
-
-              <div className="space-y-4 max-h-175 overflow-y-auto pr-2">
-
-                {drama.episodes.map((ep) => (
-
-                  <Link
-                    key={ep.id}
-                    href={`/watch/${drama.slug}/${ep.number}`}
-                    className={`block rounded-2xl overflow-hidden border transition ${
-                      ep.number ===
-                      currentEpisode.number
-                        ? "border-purple-500 bg-purple-500/10"
-                        : "border-white/5 hover:border-purple-500/40"
-                    }`}
-                  >
-
-                    <div className="flex gap-4 p-3">
-
-                      <img
-                        src={ep.thumbnail}
-                        alt={ep.title}
-                        className="w-32 h-20 object-cover rounded-xl"
-                      />
-
-                      <div className="flex-1">
-
-                        <div className="flex items-center justify-between mb-2">
-
-                          <span className="text-sm text-purple-400 font-semibold">
-
-                            EP {ep.number}
-
-                          </span>
-
-                          <span className="text-xs text-zinc-500">
-
-                            {ep.duration} min
-
-                          </span>
-
-                        </div>
-
-                        <h4 className="font-semibold line-clamp-2">
-
-                          {ep.title}
-
-                        </h4>
-
-                      </div>
-
-                    </div>
-
-                  </Link>
-
-                ))}
+                <span>
+                  {currentEpisode.duration} min
+                </span>
 
               </div>
 
             </div>
 
+            {/* CONTROLES */}
+
+            <div className="flex flex-wrap gap-4 mt-8">
+
+              {nextEpisode && (
+                <Link
+                  href={`/watch/${slug}/${nextEpisode.number}`}
+                  className="bg-purple-500 hover:bg-purple-600 px-6 py-3 rounded-xl font-semibold transition"
+                >
+                  Próximo Episódio
+                </Link>
+              )}
+
+              {previousEpisode && (
+                <Link
+                  href={`/watch/${slug}/${previousEpisode.number}`}
+                  className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl transition"
+                >
+                  Episódio Anterior
+                </Link>
+              )}
+
+              <button className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl transition">
+                ❤️ Favoritar
+              </button>
+
+            </div>
+
+            {/* COMENTÁRIOS */}
+
+            <section className="mt-16">
+
+              <h2 className="text-3xl font-bold mb-8">
+                Comentários
+              </h2>
+
+              <div className="space-y-6">
+
+                <div className="bg-[#18181F] p-6 rounded-2xl">
+
+                  <div className="flex items-center gap-4">
+
+                    <div className="w-12 h-12 bg-purple-500 rounded-full" />
+
+                    <div>
+
+                      <h3 className="font-semibold">
+                        Usuário
+                      </h3>
+
+                      <p className="text-zinc-400 text-sm">
+                        há 2 horas
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <p className="text-zinc-300 mt-4">
+                    Esse episódio foi absurdo 🔥
+                  </p>
+
+                </div>
+
+              </div>
+
+            </section>
+
           </div>
+
+          {/* SIDEBAR */}
+
+          <aside className="bg-[#18181F] rounded-3xl p-6 h-fit sticky top-24">
+
+            <div className="flex items-center justify-between mb-6">
+
+              <h2 className="text-2xl font-bold">
+                Episódios
+              </h2>
+
+              <span className="text-zinc-400">
+                {drama.episodes.length} EP
+              </span>
+
+            </div>
+
+            <div className="space-y-4 max-h-200 overflow-y-auto pr-2">
+
+              {drama.episodes.map((ep) => (
+
+                <Link
+                  href={`/watch/${slug}/${ep.number}`}
+                  key={ep.id}
+                  className={`block p-4 rounded-2xl cursor-pointer transition ${
+                    ep.number.toString() ===
+                    episode
+                      ? "bg-purple-500"
+                      : "bg-black/20 hover:bg-black/40"
+                  }`}
+                >
+
+                  <div className="flex gap-4">
+
+                    <div className="relative w-28 h-16 rounded-xl overflow-hidden shrink-0">
+
+                      <Image
+                        src={ep.thumbnail}
+                        alt={ep.title}
+                        fill
+                        className="object-cover"
+                      />
+
+                    </div>
+
+                    <div>
+
+                      <h3 className="font-semibold line-clamp-1">
+                        Episódio {ep.number}
+                      </h3>
+
+                      <p className="text-sm text-zinc-300 mt-2 line-clamp-1">
+                        {ep.title}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </Link>
+
+              ))}
+
+            </div>
+
+          </aside>
 
         </div>
 

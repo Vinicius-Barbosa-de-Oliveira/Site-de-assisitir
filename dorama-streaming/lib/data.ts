@@ -19,42 +19,33 @@
             latestEpisode:
             drama.episodes[0] || null,
         }));
-
-        return prisma.drama.findMany({
-            include: {
-            episodes: true,
-            },
-        });
     }
 
-    export async function getDramaBySlug(slug: string) {
+export async function getDramaBySlug(slug: string) {
     return prisma.drama.findUnique({
         where: {
-        slug,
+            slug,
         },
-
         include: {
-        episodes: {
-            orderBy: {
-            number: "asc",
+            episodes: {
+                orderBy: {
+                    number: "asc",
+                },
             },
         },
-        },
     });
-    }
+}
 
-    export async function getLatestEpisodes() {
-    const dramas = await prisma.drama.findMany({
-        include: {
-        episodes: {
-            orderBy: {
-            number: "desc",
-            },
+export async function getLatestEpisodes() {
+  return prisma.episode.findMany({
+    take: 12,
 
-            take: 1,
-        },
-        },
-    });
+    orderBy: {
+      releaseDate: "desc",
+    },
 
-    return dramas.filter((d) => d.episodes.length > 0);
-    }
+    include: {
+      drama: true,
+    },
+  });
+}

@@ -7,7 +7,7 @@
     import Footer from "@/components/Footer";
     import DramaCard from "@/components/DramaCard";
 
-    import { dramas } from "@/data/dramas";
+
 
     const categories = [
     "Todos",
@@ -47,6 +47,10 @@
     const [search, setSearch] =
         useState("");
 
+    const [dramas, setDramas] = useState<any[]>([]);
+
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
 
         if (genreFromUrl) {
@@ -59,6 +63,26 @@
 
     }, [genreFromUrl, searchFromUrl]);
 
+    useEffect(() => {
+        const fetchDramas = async () => {
+            try {
+                const response = await fetch("/api/dramas");
+                if (response.ok) {
+                    const data = await response.json();
+                    setDramas(data);
+                } else {
+                    console.error("Erro ao buscar dramas");
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDramas();
+    }, []);
+
     const filteredDramas = useMemo(() => {
 
         return dramas.filter((drama) => {
@@ -66,7 +90,7 @@
         const matchesCategory =
             selectedCategory === "Todos"
             ? true
-            : drama.category.includes(selectedCategory);
+            : drama.genres.includes(selectedCategory);
 
         const matchesSearch =
             drama.title
@@ -77,7 +101,7 @@
 
         });
 
-    }, [selectedCategory, search]);
+    }, [selectedCategory, search, dramas]);
 
 
     return (
@@ -166,7 +190,7 @@
                 </h2>
 
                 <p className="text-zinc-400 mt-2">
-                {filteredDramas.length} doramas encontrados
+                {loading ? "Carregando..." : `${filteredDramas.length} doramas encontrados`}
                 </p>
 
             </div>
@@ -177,7 +201,13 @@
 
             </div>
 
-            {filteredDramas.length === 0 ? (
+            {loading ? (
+            <div className="bg-[#18181F] rounded-3xl p-20 text-center border border-white/5">
+                <h3 className="text-3xl font-bold">
+                Carregando dramas...
+                </h3>
+            </div>
+            ) : filteredDramas.length === 0 ? (
 
             <div className="bg-[#18181F] rounded-3xl p-20 text-center border border-white/5">
 
@@ -198,11 +228,8 @@
                 {filteredDramas.map((drama) => (
 
                 <DramaCard
-                    key={drama.slug}
-                    id={drama.slug}
-                    title={drama.title}
-                    image={drama.image}
-                    episode={drama.episode}
+                    key={drama.id}
+                    drama={drama}
                 />
 
                 ))}

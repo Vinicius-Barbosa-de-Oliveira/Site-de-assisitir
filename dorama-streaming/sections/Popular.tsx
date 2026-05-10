@@ -19,25 +19,24 @@ export default function Popular({
         Mais Populares
       </h2>
 
-      <Swiper
-        modules={[Navigation]}
-        navigation
-        spaceBetween={20}
-        breakpoints={{
-          320: {
-            slidesPerView: 1.2,
-          },
-          640: {
-            slidesPerView: 2.2,
-          },
-          1024: {
-            slidesPerView: 4.2,
-          },
-          1400: {
-            slidesPerView: 5.2,
-          },
-        }}
-      >
+      <div className="relative overflow-visible">
+        <Swiper
+          className="latest-episodes-swiper"
+          modules={[Navigation]}
+          navigation
+          spaceBetween={20}
+          breakpoints={{
+            320: {
+              slidesPerView: 1,
+            },
+            768: {
+              slidesPerView: 2,
+            },
+            1200: {
+              slidesPerView: 3,
+            },
+          }}
+        >
 
         {dramas.map((drama) => (
 
@@ -49,7 +48,8 @@ export default function Popular({
 
         ))}
 
-      </Swiper>
+        </Swiper>
+      </div>
 
     </section>
   );

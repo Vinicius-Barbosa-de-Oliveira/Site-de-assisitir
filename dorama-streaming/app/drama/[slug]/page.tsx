@@ -3,9 +3,12 @@ import Link from "next/link";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import EpisodeCard from "@/components/EpisodeCard";
 
-import { getDramaBySlug } from "@/lib/data";
+import Recommended from "@/sections/Recommended";
 import TrendingSection from "@/sections/TrendingSection";
+
+import { getDramaBySlug, getAllDramas } from "@/lib/data";
 
 interface Props {
   params: Promise<{
@@ -17,6 +20,7 @@ export default async function DramaPage({
   params,
 }: Props) {
 
+  const dramas = await getAllDramas();
   const { slug } = await params;
 
   const drama =
@@ -24,65 +28,142 @@ export default async function DramaPage({
 
   if (!drama) {
     return (
-      <main className="min-h-screen bg-[#09090B] text-white flex items-center justify-center">
+      <main className="bg-[#0F0F14] min-h-screen text-white flex items-center justify-center">
         <h1 className="text-3xl font-bold">
-          Dorama não encontrado
+          Dorama não encontrado.
         </h1>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#09090B] text-white">
+    <main className="bg-[#0F0F14] min-h-screen text-white">
 
       <Navbar />
 
       {/* HERO */}
 
-      <section className="relative h-[70vh] w-full overflow-hidden">
+      <section className="relative min-h-175 overflow-hidden">
 
-        <Image
+        <img
           src={drama.bannerImage}
           alt={drama.title}
-          fill
-          priority
-          className="object-cover"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
         />
 
-        <div className="absolute inset-0 bg-linear-to-t from-[#09090B] via-black/60 to-black/40" />
-        
-        <div className="absolute bottom-0 left-0 w-full px-6 md:px-12 pb-14 flex justify-center">
+        <div className="absolute inset-0 bg-linear-to-t from-[#0F0F14] via-[#0F0F14]/70 to-transparent" />
 
-          <div className="max-w-4xl text-center flex flex-col items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 min-h-175 flex items-end pb-20">
 
-            <span className="bg-purple-500 px-4 py-2 rounded-xl text-sm font-semibold">
-              {drama.status}
-            </span>
+          <div className="grid lg:grid-cols-[320px_1fr] gap-10 items-end w-full">
 
-            <h1 className="text-5xl md:text-7xl font-black mt-6">
-              {drama.title}
-            </h1>
+            <img
+              src={drama.coverImage}
+              alt={drama.title}
+              className="w-full max-w-[320px] h-115 object-cover rounded-3xl shadow-2xl mx-auto lg:mx-0"
+            />
 
-            <div className="flex items-center justify-center gap-6 mt-5 text-zinc-300 flex-wrap">
+            <div className="text-center lg:text-left">
 
-              <span>
-                ⭐ {drama.rating}
+              <span className="bg-purple-500 px-4 py-2 rounded-full text-sm">
+                {drama.status}
               </span>
 
-              <span>
-                {drama.year}
-              </span>
+              <h1 className="text-4xl md:text-6xl font-bold mt-6">
+                {drama.title}
+              </h1>
 
-              <span>
-                {drama.country}
-              </span>
+              <div className="flex flex-wrap gap-3 mt-6 justify-center lg:justify-start">
+
+                <span className="bg-white/10 px-4 py-2 rounded-xl">
+                  {drama.country}
+                </span>
+
+                <span className="bg-white/10 px-4 py-2 rounded-xl">
+                  {drama.year}
+                </span>
+
+                <span className="bg-white/10 px-4 py-2 rounded-xl">
+                  ⭐ {drama.rating}
+                </span>
+
+              </div>
+
+              <p className="text-zinc-300 mt-6 max-w-3xl leading-relaxed mx-auto lg:mx-0">
+                {drama.description}
+              </p>
+
+              <div className="flex flex-wrap gap-4 mt-8 justify-center lg:justify-start">
+
+                <Link
+                  href={`/watch/${drama.slug}/${drama.episodes[0]?.number || 1}`}
+                  className="bg-purple-500 hover:bg-purple-600 px-8 py-4 rounded-2xl font-semibold transition"
+                >
+                  ▶ Assistir Agora
+                </Link>
+
+                <button className="bg-white/10 hover:bg-white/20 px-8 py-4 rounded-2xl transition">
+                  ❤️ Favoritar
+                </button>
+
+                <button className="bg-white/10 hover:bg-white/20 px-8 py-4 rounded-2xl transition">
+                  ➕ Minha Lista
+                </button>
+
+              </div>
 
             </div>
 
-            <p className="mt-6 text-zinc-300 leading-8 text-lg max-w-3xl text-center">
-              {drama.description}
-            </p>
+          </div>
 
+        </div>
+
+      </section>
+
+      {/* INFO */}
+
+      <section className="max-w-7xl mx-auto px-6 py-16">
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+          <div className="bg-[#18181F] p-6 rounded-2xl">
+            <h3 className="text-zinc-400 text-sm">
+              País
+            </h3>
+
+            <p className="font-semibold mt-2">
+              {drama.country}
+            </p>
+          </div>
+
+          <div className="bg-[#18181F] p-6 rounded-2xl">
+            <h3 className="text-zinc-400 text-sm">
+              Episódios
+            </h3>
+
+            <p className="font-semibold mt-2">
+              {drama.episodes.length}
+            </p>
+          </div>
+
+          <div className="bg-[#18181F] p-6 rounded-2xl">
+            <h3 className="text-zinc-400 text-sm">
+              Duração
+            </h3>
+
+            <p className="font-semibold mt-2">
+              {drama.episodes[0]?.duration || 0} min
+            </p>
+          </div>
+
+          <div className="bg-[#18181F] p-6 rounded-2xl">
+            <h3 className="text-zinc-400 text-sm">
+              Avaliação
+            </h3>
+
+            <p className="font-semibold mt-2">
+              ⭐ {drama.rating}
+            </p>
           </div>
 
         </div>
@@ -91,86 +172,50 @@ export default async function DramaPage({
 
       {/* EPISODES */}
 
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-20">
+      <section className="max-w-7xl mx-auto px-6 py-10">
 
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
+        <div className="flex items-center justify-between mb-8">
 
-          <div>
+          <h2 className="text-3xl font-bold">
+            Episódios
+          </h2>
 
-            <h2 className="text-4xl font-bold">
-              Episódios
-            </h2>
-
-            <p className="text-zinc-400 mt-2">
-              Todos os episódios disponíveis
-            </p>
-
-          </div>
+          <button className="text-purple-400">
+            Ordenar
+          </button>
 
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="space-y-4">
 
           {drama.episodes.map((episode) => (
-
-            <Link
+            <EpisodeCard
               key={episode.id}
-              href={`/watch/${drama.slug}/${episode.number}`}
-              className="group"
-            >
-
-              <div className="bg-[#18181F] border border-white/5 hover:border-purple-500/40 rounded-3xl overflow-hidden transition">
-
-                <div className="relative h-55 overflow-hidden">
-
-                  <Image
-                    src={episode.thumbnail}
-                    alt={episode.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition duration-500"
-                  />
-
-                  <div className="absolute inset-0 bg-linear-to-t from-black/90 to-transparent" />
-
-                  <div className="absolute bottom-4 left-4">
-
-                    <span className="bg-purple-500 px-3 py-1 rounded-lg text-sm font-semibold">
-                      EP {episode.number}
-                    </span>
-
-                  </div>
-
-                </div>
-
-                <div className="p-5">
-
-                  <h3 className="font-bold text-xl line-clamp-1">
-                    {episode.title}
-                  </h3>
-
-                  <div className="flex items-center justify-between mt-4 text-sm text-zinc-400">
-
-                    <span>
-                      {episode.duration} min
-                    </span>
-
-                    <span>
-                      {new Date(
-                        episode.releaseDate
-                      ).toLocaleDateString("pt-BR")}
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </Link>
-
+              episode={{
+                id: episode.id,
+                number: episode.number,
+                title: episode.title,
+                thumbnail: episode.thumbnail,
+                duration: episode.duration,
+                episode: {
+                  videoUrl: episode.videoUrl,
+                  description: episode.description,
+                  releaseDate: episode.releaseDate,
+                },
+                dramaSlug: drama.slug,
+              }}
+              dramaSlug={drama.slug}
+            />
           ))}
 
         </div>
+
+      </section>
+      <section className="max-w-8xl mx-auto px-6 py-10">
+
+
+        <TrendingSection dramas={dramas} />
+
 
       </section>
 

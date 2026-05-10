@@ -1,36 +1,44 @@
-import Link from "next/link";
-
 const categories = [
   "Romance",
   "Ação",
   "Drama",
-  "Comédia",
   "Fantasia",
-  "Escolar",
-  "Suspense",
-  "Terror",
   "Histórico",
-  "Mistério",
+  "Comédia",
+  "Suspense",
+  "Escolar",
 ];
 
 export default function Categories() {
+
   return (
-    <section className="space-y-6">
+    <section className="max-w-7xl mx-auto px-6 py-16">
 
-      <h2 className="text-3xl font-bold">
-        Categorias
-      </h2>
+      <div className="mb-10">
 
-      <div className="flex flex-wrap gap-4">
+        <h2 className="text-4xl font-black">
+          Categorias
+        </h2>
+
+        <p className="text-zinc-400 mt-2">
+          Explore por gênero
+        </p>
+
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
         {categories.map((category) => (
-          <Link
+
+          <button
             key={category}
-            href={`/categories?genre=${category}`}
-            className="bg-zinc-900 hover:bg-purple-600 transition px-5 py-3 rounded-xl font-medium"
+            className="bg-[#18181F] border border-white/5 hover:border-purple-500/40 hover:bg-purple-500/10 transition-all duration-300 rounded-3xl p-10 text-2xl font-bold"
           >
+
             {category}
-          </Link>
+
+          </button>
+
         ))}
 
       </div>

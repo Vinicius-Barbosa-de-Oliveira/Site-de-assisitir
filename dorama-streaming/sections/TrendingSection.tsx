@@ -24,21 +24,19 @@ export default function TrendingSection({
       </div>
 
       <Swiper
+        className="latest-episodes-swiper"
         modules={[Navigation]}
         navigation
         spaceBetween={20}
         breakpoints={{
           320: {
-            slidesPerView: 1.2,
+            slidesPerView: 1,
           },
-          640: {
-            slidesPerView: 2.2,
+          768: {
+            slidesPerView: 2,
           },
-          1024: {
-            slidesPerView: 4.2,
-          },
-          1400: {
-            slidesPerView: 5.2,
+          1200: {
+            slidesPerView: 3,
           },
         }}
       >

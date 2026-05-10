@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
+
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 import { getAllDramas } from "@/lib/data";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
 
 const weekDays = [
   "Segunda",
@@ -20,178 +20,195 @@ export default async function SchedulePage() {
   const dramas = await getAllDramas();
 
   return (
-    <main className="min-h-screen bg-[#07070A] text-white">
+    <main className="bg-[#0F0F14] min-h-screen text-white">
 
       <Navbar />
 
-      <div className="flex items-start justify-between mb-14">
+      {/* HERO */}
 
-        <div>
+      <section className="relative overflow-hidden border-b border-white/10">
 
-          <h1 className="text-5xl font-black text-white">
-            Calendário Semanal
-          </h1>
+          <div className="absolute inset-0 bg-linear-to-r from-purple-500/20 to-transparent" />
 
-          <p className="text-zinc-400 mt-3">
-            Próximos lançamentos da semana
-          </p>
+              <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
 
-        </div>
+              <span className="bg-purple-500 px-4 py-2 rounded-full text-sm">
+                  lançamentos da semana
+              </span>
 
-        <Link
-          href="/"
-          className="text-purple-400 hover:text-purple-300 transition"
-        >
-          Voltar
-        </Link>
+              <h1 className="text-6xl font-black mt-6">
+                  Calendário
+              </h1>
 
-      </div>
+              <p className="text-zinc-400 text-lg mt-6 max-w-2xl">
+                  Fique por dentro dos próximos episódios que serão lançados
+              </p>
 
-      {/* DAYS */}
+          </div>
 
-      <div className="space-y-20">
+      </section>
 
-        {weekDays.map((day) => {
+      {/* CALENDAR */}
 
-          const dayDramas = dramas.filter(
-            (drama: any) =>
-              drama.scheduleDay === day
-          );
+      <section className="max-w-7xl mx-auto px-6 py-16">
 
-          if (dayDramas.length === 0)
-            return null;
+        <div className="space-y-20">
 
-          return (
+          {weekDays.map((day) => {
 
-            <section key={day}>
+            const dayDramas = dramas.filter(
+              (drama) =>
+                drama.scheduleDay === day
+            );
 
-              {/* DAY TITLE */}
+            if (dayDramas.length === 0)
+              return null;
 
-              <div className="flex items-center gap-4 mb-8">
+            return (
 
-                <div className="w-2 h-10 rounded-full bg-purple-500" />
+              <div key={day}>
 
-                <div>
+                {/* DAY */}
 
-                  <h2 className="text-4xl font-bold text-white">
+                <div className="flex items-center gap-4 mb-10">
+
+                  <div className="w-3 h-12 bg-purple-500 rounded-full" />
+
+                  <h2 className="text-4xl font-bold">
                     {day}
                   </h2>
 
-                  <p className="text-zinc-500 text-sm mt-1">
-                    {dayDramas.length} doramas lançando
-                  </p>
-
                 </div>
 
-              </div>
+                {/* GRID */}
 
-              {/* GRID */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
-              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {dayDramas.map((drama) => {
 
-                {dayDramas.map((drama: any) => {
+                    const latestEpisode =
+                      drama.episodes?.[
+                        drama.episodes.length - 1
+                      ];
 
-                  const latestEpisode =
-                    drama.episodes?.[
-                      drama.episodes.length - 1
-                    ];
+                    return (
 
-                  return (
+                      <Link
+                        key={drama.id}
+                        href={`/drama/${drama.slug}`}
+                        className="group"
+                      >
 
-                    <Link
-                      key={drama.id}
-                      href={`/drama/${drama.slug}`}
-                      className="group"
-                    >
+                        <div className="bg-[#18181F] border border-white/5 rounded-3xl overflow-hidden hover:border-purple-500/50 transition">
 
-                      <div className="relative h-105 overflow-hidden rounded-3xl border border-white/5 bg-zinc-900">
+                          {/* IMAGE */}
 
-                        {/* IMAGE */}
+                          <div className="relative h-105 overflow-hidden">
 
-                        <Image
-                          src={drama.bannerImage}
-                          alt={drama.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition duration-500"
-                        />
+                            <img
+                              src={drama.coverImage}
+                              alt={drama.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                            />
 
-                        {/* OVERLAY */}
+                            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
 
-                        <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
+                            {/* TIME */}
 
-                        {/* CONTENT */}
-
-                        <div className="absolute inset-0 p-7 flex flex-col justify-between">
-
-                          {/* TOP */}
-
-                          <div className="flex items-start justify-between">
-
-                            <span className="bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-
-                              {day}
-
-                            </span>
-
-                            <span className="text-sm font-semibold text-purple-300">
+                            <div className="absolute top-4 right-4 bg-purple-500 px-4 py-2 rounded-full text-sm font-bold">
 
                               {drama.scheduleTime}
 
-                            </span>
+                            </div>
+
+                            {/* STATUS */}
+
+                            {latestEpisode && (
+
+                              <div className="absolute bottom-4 left-4">
+
+                                <span className="bg-black/50 backdrop-blur-xl px-4 py-2 rounded-full text-sm">
+
+                                  EP {latestEpisode.number}
+
+                                </span>
+
+                              </div>
+
+                            )}
 
                           </div>
 
-                          {/* BOTTOM */}
+                          {/* CONTENT */}
 
-                          <div>
+                          <div className="p-6">
 
-                            <h2 className="text-4xl font-black leading-tight text-white group-hover:text-purple-300 transition">
+                            <div className="flex items-start justify-between gap-4">
 
-                              {drama.title}
+                              <div>
 
-                            </h2>
+                                <h3 className="text-2xl font-bold">
 
-                            <p className="text-zinc-300 mt-4 line-clamp-3 text-sm leading-relaxed">
+                                  {drama.title}
 
-                              {drama.description}
+                                </h3>
 
-                            </p>
+                                <p className="text-zinc-400 mt-2 text-sm">
 
-                            <div className="flex items-center justify-between mt-8">
+                                  {drama.country} • {drama.year}
 
-                              <span className="text-zinc-300 font-semibold">
+                                </p>
 
-                                EP {latestEpisode?.number}
+                              </div>
 
-                              </span>
-
-                              <span className="text-yellow-400 font-bold">
+                              <div className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-xl text-sm font-semibold">
 
                                 ⭐ {drama.rating}
+
+                              </div>
+
+                            </div>
+
+                            {/* STATUS */}
+
+                            <div className="flex flex-wrap gap-2 mt-5">
+
+                              <span className="bg-black/20 px-3 py-2 rounded-xl text-sm text-zinc-300">
+
+                                {drama.status}
 
                               </span>
 
                             </div>
 
+                            {/* SYNOPSIS */}
+
+                            <p className="text-zinc-400 text-sm leading-relaxed mt-5 line-clamp-3">
+
+                              {drama.description}
+
+                            </p>
+
                           </div>
 
                         </div>
 
-                      </div>
+                      </Link>
 
-                    </Link>
+                    );
+                  })}
 
-                  );
-                })}
+                </div>
 
               </div>
 
-            </section>
+            );
 
-          );
-        })}
+          })}
 
-      </div>
+        </div>
+
+      </section>
 
       <Footer />
 

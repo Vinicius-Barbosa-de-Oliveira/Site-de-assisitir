@@ -40,9 +40,9 @@ export default async function Home() {
 
         <ContinueWatching dramas={dramas} />
 
-        <Popular dramas={dramas} />
-
         <Recommended dramas={dramas} />
+
+        <Popular dramas={dramas} />
 
         <HomeSchedule dramas={dramas} />
 
