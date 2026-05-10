@@ -4,145 +4,208 @@ import { redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth";
 
+import Navbar from "@/components/Navbar";
+
+import Footer from "@/components/Footer";
+
+import { Heart, Clock, Play } from "lucide-react";
+
 export default async function ProfilePage() {
 
-  const session =
-    await getServerSession(
-      authOptions
-    );
+  const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect("/login");
   }
 
   return (
+    <>
+      <Navbar />
 
-    <main className="min-h-screen bg-[#0F0F14] text-white px-6 py-10">
+      <main className="min-h-screen bg-[#0F0F14] text-white">
 
-      <div className="max-w-6xl mx-auto">
+        {/* Hero Section */}
+        <section className="relative py-16 border-b border-white/5">
 
-        <div className="flex items-center gap-6 mb-12">
+          <div className="max-w-7xl mx-auto px-6">
 
-          <div className="w-28 h-28 rounded-full bg-purple-500 flex items-center justify-center text-5xl font-black">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
 
-            {session.user?.name?.[0]}
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-6xl font-black flex-shrink-0">
+                {session.user?.name?.[0]?.toUpperCase()}
+              </div>
 
-          </div>
+              <div className="flex-1">
 
-          <div>
+                <h1 className="text-5xl font-black mb-2">
+                  {session.user?.name}
+                </h1>
 
-            <h1 className="text-5xl font-black">
+                <p className="text-white/60 text-lg mb-6">
+                  {session.user?.email}
+                </p>
 
-              {session.user?.name}
+                <div className="flex gap-4">
+                  <button className="px-6 py-3 rounded-xl bg-purple-500 hover:bg-purple-600 transition font-semibold">
+                    Editar Perfil
+                  </button>
+                  <button className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition font-semibold">
+                    Configurações
+                  </button>
+                </div>
 
-            </h1>
+              </div>
 
-            <p className="text-white/60 mt-2">
-
-              {session.user?.email}
-
-            </p>
-
-          </div>
-
-        </div>
-
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-
-          <div className="bg-[#18181F] rounded-3xl p-6 border border-white/5">
-
-            <p className="text-white/50 text-sm mb-2">
-
-              Doramas Favoritos
-
-            </p>
-
-            <h2 className="text-4xl font-black">
-
-              0
-
-            </h2>
-
-          </div>
-
-          <div className="bg-[#18181F] rounded-3xl p-6 border border-white/5">
-
-            <p className="text-white/50 text-sm mb-2">
-
-              Episódios Assistidos
-
-            </p>
-
-            <h2 className="text-4xl font-black">
-
-              0
-
-            </h2>
-
-          </div>
-
-          <div className="bg-[#18181F] rounded-3xl p-6 border border-white/5">
-
-            <p className="text-white/50 text-sm mb-2">
-
-              Tempo Assistido
-
-            </p>
-
-            <h2 className="text-4xl font-black">
-
-              0h
-
-            </h2>
+            </div>
 
           </div>
 
         </section>
 
-        <section className="mb-12">
+        {/* Stats Section */}
+        <section className="py-12">
 
-          <div className="flex items-center justify-between mb-6">
+          <div className="max-w-7xl mx-auto px-6">
 
-            <h2 className="text-3xl font-black">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 
-              Continue Assistindo
+              <div className="bg-[#18181F] border border-white/5 hover:border-purple-500/20 rounded-3xl p-8 transition group">
 
-            </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition">
+                    <Heart size={24} className="text-purple-400" />
+                  </div>
+                </div>
 
-          </div>
+                <p className="text-white/60 text-sm mb-2">
+                  Doramas Favoritos
+                </p>
 
-          <div className="bg-[#18181F] rounded-3xl p-10 border border-white/5 text-white/50">
+                <h3 className="text-4xl font-black">
+                  0
+                </h3>
 
-            Nenhum episódio em andamento.
+              </div>
+
+              <div className="bg-[#18181F] border border-white/5 hover:border-purple-500/20 rounded-3xl p-8 transition group">
+
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition">
+                    <Play size={24} className="text-purple-400" />
+                  </div>
+                </div>
+
+                <p className="text-white/60 text-sm mb-2">
+                  Episódios Assistidos
+                </p>
+
+                <h3 className="text-4xl font-black">
+                  0
+                </h3>
+
+              </div>
+
+              <div className="bg-[#18181F] border border-white/5 hover:border-purple-500/20 rounded-3xl p-8 transition group">
+
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition">
+                    <Clock size={24} className="text-purple-400" />
+                  </div>
+                </div>
+
+                <p className="text-white/60 text-sm mb-2">
+                  Tempo Assistido
+                </p>
+
+                <h3 className="text-4xl font-black">
+                  0h
+                </h3>
+
+              </div>
+
+            </div>
 
           </div>
 
         </section>
 
-        <section>
+        {/* Continue Watching Section */}
+        <section className="py-12 border-t border-white/5">
 
-          <div className="flex items-center justify-between mb-6">
+          <div className="max-w-7xl mx-auto px-6">
 
-            <h2 className="text-3xl font-black">
+            <div className="mb-8">
 
-              Favoritos
+              <h2 className="text-3xl font-black mb-2">
+                Continue Assistindo
+              </h2>
 
-            </h2>
+              <p className="text-white/60">
+                Retome seus episódios favoritos
+              </p>
 
-          </div>
+            </div>
 
-          <div className="bg-[#18181F] rounded-3xl p-10 border border-white/5 text-white/50">
+            <div className="bg-[#18181F] border border-white/5 rounded-3xl p-12 text-center">
 
-            Nenhum favorito ainda.
+              <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+                <Play size={32} className="text-white/30" />
+              </div>
+
+              <p className="text-white/50 text-lg">
+                Nenhum episódio em andamento.
+              </p>
+
+              <p className="text-white/30 text-sm mt-2">
+                Comece a assistir um dorama para ver seu progresso aqui
+              </p>
+
+            </div>
 
           </div>
 
         </section>
 
-      </div>
+        {/* Favorites Section */}
+        <section className="py-12 border-t border-white/5">
 
-    </main>
+          <div className="max-w-7xl mx-auto px-6">
 
+            <div className="mb-8">
+
+              <h2 className="text-3xl font-black mb-2">
+                Favoritos
+              </h2>
+
+              <p className="text-white/60">
+                Seus doramas salvos
+              </p>
+
+            </div>
+
+            <div className="bg-[#18181F] border border-white/5 rounded-3xl p-12 text-center">
+
+              <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+                <Heart size={32} className="text-white/30" />
+              </div>
+
+              <p className="text-white/50 text-lg">
+                Nenhum favorito ainda.
+              </p>
+
+              <p className="text-white/30 text-sm mt-2">
+                Clique no ícone de coração para salvar seus doramas favoritos
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </main>
+
+      <Footer />
+    </>
   );
-
 }

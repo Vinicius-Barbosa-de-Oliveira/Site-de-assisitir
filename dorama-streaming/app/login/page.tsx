@@ -6,104 +6,138 @@ import { signIn } from "next-auth/react";
 
 import { useRouter } from "next/navigation";
 
+import Link from "next/link";
+
+import Navbar from "@/components/Navbar";
+
+import Footer from "@/components/Footer";
+
+import { LogIn } from "lucide-react";
+
 export default function LoginPage() {
 
-const router = useRouter();
+  const router = useRouter();
 
-const [email, setEmail] =
-    useState("");
+  const [email, setEmail] = useState("");
 
-const [password, setPassword] =
-    useState("");
+  const [password, setPassword] = useState("");
 
-const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-async function handleLogin(
-    e: React.FormEvent
-) {
+  const [error, setError] = useState("");
+
+  async function handleLogin(e: React.FormEvent) {
 
     e.preventDefault();
 
     setLoading(true);
+    setError("");
 
-    const response =
-    await signIn("credentials", {
-
-        email,
-
-        password,
-
-        redirect: false,
+    const response = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
     });
 
     setLoading(false);
 
     if (response?.error) {
-
-    alert(
-        "Email ou senha inválidos"
-    );
-
-    return;
-
+      setError("Email ou senha inválidos");
+      return;
     }
 
     router.push("/");
+  }
 
-}
+  return (
+    <>
+      <Navbar />
+      
+      <main className="min-h-screen bg-[#0F0F14] flex items-center justify-center px-6 py-20">
 
-return (
-    <main className="min-h-screen bg-[#0F0F14] flex items-center justify-center px-6">
+        <div className="w-full max-w-md">
 
-    <div className="w-full max-w-md bg-[#18181F] border border-white/5 rounded-3xl p-10">
+          <div className="mb-12 text-center">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                <LogIn size={32} className="text-white" />
+              </div>
+            </div>
+            <h1 className="text-5xl font-black text-white mb-3">
+              Entrar
+            </h1>
+            <p className="text-white/60">
+              Bem-vindo de volta ao seu streaming favorito
+            </p>
+          </div>
 
-        <h1 className="text-5xl font-black text-white mb-10">
+          <div className="bg-[#18181F] border border-white/5 hover:border-purple-500/20 transition rounded-3xl p-10 backdrop-blur-sm">
 
-        Entrar
+            {error && (
+              <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                {error}
+              </div>
+            )}
 
-        </h1>
+            <form onSubmit={handleLogin} className="space-y-5">
 
-        <form
-        onSubmit={handleLogin}
-        className="space-y-5"
-        >
+              <div>
+                <label className="text-white/70 text-sm font-semibold mb-2 block">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full h-12 rounded-xl bg-black/30 px-4 outline-none text-white placeholder:text-white/30 border border-white/5 focus:border-purple-500/40 transition"
+                />
+              </div>
 
-        <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) =>
-            setEmail(e.target.value)
-            }
-            className="w-full h-14 rounded-2xl bg-black/20 px-5 outline-none text-white"
-        />
+              <div>
+                <label className="text-white/70 text-sm font-semibold mb-2 block">
+                  Senha
+                </label>
+                <input
+                  type="password"
+                  placeholder="Sua senha segura"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full h-12 rounded-xl bg-black/30 px-4 outline-none text-white placeholder:text-white/30 border border-white/5 focus:border-purple-500/40 transition"
+                />
+              </div>
 
-        <input
-            type="password"
-            placeholder="Senha"
-            value={password}
-            onChange={(e) =>
-            setPassword(e.target.value)
-            }
-            className="w-full h-14 rounded-2xl bg-black/20 px-5 outline-none text-white"
-        />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:opacity-50 transition font-bold text-white mt-8"
+              >
+                {loading ? "Entrando..." : "Entrar"}
+              </button>
 
-        <button
-            disabled={loading}
-            className="w-full h-14 rounded-2xl bg-purple-500 hover:bg-purple-600 transition font-bold text-white"
-        >
+            </form>
 
-            {loading
-            ? "Entrando..."
-            : "Entrar"}
+            <div className="mt-8 pt-8 border-t border-white/5">
+              <p className="text-white/60 text-center text-sm">
+                Não tem uma conta?{" "}
+                <Link
+                  href="/register"
+                  className="text-purple-400 hover:text-purple-300 font-semibold transition"
+                >
+                  Criar conta
+                </Link>
+              </p>
+            </div>
 
-        </button>
+          </div>
 
-        </form>
+        </div>
 
-    </div>
+      </main>
 
-    </main>
-);
+      <Footer />
+    </>
+  );
 }

@@ -3,10 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import UserMenu from "@/components/UserMenu";
 
 export default function Navbar() {
 
+  const { data: session } = useSession();
+  const role = (session?.user as any)?.role;
+  const isAdmin =
+    typeof role === "string" &&
+    role.toUpperCase() === "ADMIN";
   const [mobileMenu, setMobileMenu] = useState(false);
   const router = useRouter();
 
@@ -81,6 +87,15 @@ export default function Navbar() {
           >
             Comunidade
           </Link>
+
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="text-yellow-400 hover:text-yellow-300 transition"
+            >
+              Admin
+            </Link>
+          )}
 
         </nav>
 
@@ -170,6 +185,15 @@ export default function Navbar() {
             >
               Comunidade
             </Link>
+
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="text-yellow-400"
+              >
+                Admin
+              </Link>
+            )}
 
             {/* SEARCH MOBILE */}
 

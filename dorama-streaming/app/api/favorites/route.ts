@@ -55,7 +55,7 @@ export async function POST(
   }
 
   const favorite =
-    await prisma.favorites.create({
+    await prisma.favorite.create({
 
       data: {
 

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 
@@ -42,6 +44,7 @@ export default function ContinueWatching({
                   src={drama.image}
                   alt={drama.title}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
                   className="object-cover"
                 />
 

@@ -1,3 +1,7 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 const categories = [
   "Romance",
   "Ação",
@@ -10,6 +14,11 @@ const categories = [
 ];
 
 export default function Categories() {
+  const router = useRouter();
+
+  const handleCategoryClick = (category: string) => {
+    router.push(`/categories?genre=${encodeURIComponent(category)}`);
+  };
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-16">
@@ -32,6 +41,7 @@ export default function Categories() {
 
           <button
             key={category}
+            onClick={() => handleCategoryClick(category)}
             className="bg-[#18181F] border border-white/5 hover:border-purple-500/40 hover:bg-purple-500/10 transition-all duration-300 rounded-3xl p-10 text-2xl font-bold"
           >
 
