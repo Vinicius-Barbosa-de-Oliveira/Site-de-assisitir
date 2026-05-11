@@ -59,7 +59,7 @@ export default function LoginPage() {
 
           <div className="mb-12 text-center">
             <div className="flex items-center justify-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-linear-to-br from-purple-500 to-purple-600 flex items-center justify-center">
                 <LogIn size={32} className="text-white" />
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:opacity-50 transition font-bold text-white mt-8"
+                className="w-full h-12 rounded-xl bg-linear-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:opacity-50 transition font-bold text-white mt-8"
               >
                 {loading ? "Entrando..." : "Entrar"}
               </button>

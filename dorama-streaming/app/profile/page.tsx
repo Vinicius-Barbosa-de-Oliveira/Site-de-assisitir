@@ -10,6 +10,12 @@ import Footer from "@/components/Footer";
 
 import { Heart, Clock, Play } from "lucide-react";
 
+import { prisma } from "@/lib/prisma";
+
+import Image from "next/image";
+
+import Link from "next/link";
+
 export default async function ProfilePage() {
 
   const session = await getServerSession(authOptions);
@@ -17,6 +23,24 @@ export default async function ProfilePage() {
   if (!session) {
     redirect("/login");
   }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user?.email!,
+    },
+
+    include: {
+      favorites: {
+        include: {
+          drama: true,
+        },
+
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
+  });
 
   return (
     <>
@@ -31,7 +55,7 @@ export default async function ProfilePage() {
 
             <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
 
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-6xl font-black flex-shrink-0">
+              <div className="w-32 h-32 rounded-full bg-linear-to-br from-purple-500 to-purple-600 flex items-center justify-center text-6xl font-black shrink-0">
                 {session.user?.name?.[0]?.toUpperCase()}
               </div>
 
@@ -82,7 +106,7 @@ export default async function ProfilePage() {
                 </p>
 
                 <h3 className="text-4xl font-black">
-                  0
+                  {user?.favorites.length || 0}
                 </h3>
 
               </div>
@@ -183,21 +207,76 @@ export default async function ProfilePage() {
 
             </div>
 
-            <div className="bg-[#18181F] border border-white/5 rounded-3xl p-12 text-center">
+            {user?.favorites.length ? (
 
-              <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-                <Heart size={32} className="text-white/30" />
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                {user.favorites.map((favorite) => (
+
+                  <Link
+                    key={favorite.id}
+                    href={`/drama/${favorite.drama.slug}`}
+                    className="group"
+                  >
+
+                    <div className="bg-[#18181F] border border-white/5 hover:border-purple-500/30 rounded-3xl overflow-hidden transition">
+
+                      <div className="relative h-80 overflow-hidden">
+
+                        <Image
+                          src={favorite.drama.coverImage}
+                          alt={favorite.drama.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition duration-500"
+                        />
+
+                      </div>
+
+                      <div className="p-5">
+
+                        <h3 className="text-2xl font-bold line-clamp-1">
+
+                          {favorite.drama.title}
+
+                        </h3>
+
+                        <p className="text-white/50 text-sm mt-2">
+
+                          {favorite.drama.country} • {favorite.drama.year}
+
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                  </Link>
+
+                ))}
+
               </div>
 
-              <p className="text-white/50 text-lg">
-                Nenhum favorito ainda.
-              </p>
+            ) : (
 
-              <p className="text-white/30 text-sm mt-2">
-                Clique no ícone de coração para salvar seus doramas favoritos
-              </p>
+              <div className="bg-[#18181F] border border-white/5 rounded-3xl p-12 text-center">
 
-            </div>
+                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+
+                  <Heart size={32} className="text-white/30" />
+
+                </div>
+
+                <p className="text-white/50 text-lg">
+                  Nenhum favorito ainda.
+                </p>
+
+                <p className="text-white/30 text-sm mt-2">
+                  Clique no ícone de coração para salvar seus doramas favoritos
+                </p>
+
+              </div>
+
+            )}
 
           </div>
 

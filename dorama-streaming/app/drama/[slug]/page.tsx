@@ -10,6 +10,13 @@ import TrendingSection from "@/sections/TrendingSection";
 
 import { getDramaBySlug, getAllDramas } from "@/lib/data";
 
+import FavoriteButton from "@/components/FavoriteButton";
+
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+
+
 interface Props {
   params: Promise<{
     slug: string;
@@ -34,6 +41,35 @@ export default async function DramaPage({
         </h1>
       </main>
     );
+  }
+  const session =
+  await getServerSession(authOptions);
+
+  let isFavorite = false;
+
+  if (session?.user?.email) {
+
+    const user =
+      await prisma.user.findUnique({
+        where: {
+          email: session.user.email,
+        },
+      });
+
+    if (user) {
+
+      const favorite =
+        await prisma.favorite.findFirst({
+          where: {
+            userId: user.id,
+            dramaId: drama.id,
+          },
+        });
+
+      isFavorite = !!favorite;
+
+    }
+
   }
 
   return (
@@ -102,9 +138,10 @@ export default async function DramaPage({
                   ▶ Assistir Agora
                 </Link>
 
-                <button className="bg-white/10 hover:bg-white/20 px-8 py-4 rounded-2xl transition">
-                  ❤️ Favoritar
-                </button>
+                <FavoriteButton
+                  dramaId={drama.id}
+                  isFavorite={isFavorite}
+                />
 
                 <button className="bg-white/10 hover:bg-white/20 px-8 py-4 rounded-2xl transition">
                   ➕ Minha Lista

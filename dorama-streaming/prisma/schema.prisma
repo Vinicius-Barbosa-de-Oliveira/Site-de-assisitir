@@ -32,6 +32,7 @@ model Drama {
   rating        Float
   status        String
   genres        String[]
+  favorites Favorite[]
 
   scheduleDay   String?
   scheduleTime  String?
@@ -57,14 +58,20 @@ model Episode {
 }
 
 model Favorite {
+
   id        String   @id @default(cuid())
+
   userId    String
   dramaId   String
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  drama     Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([userId, dramaId])
+
 }
 
 enum Role {
