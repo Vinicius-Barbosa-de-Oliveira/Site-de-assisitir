@@ -28,23 +28,23 @@ export default async function SchedulePage() {
 
       <section className="relative overflow-hidden border-b border-white/10">
 
-          <div className="absolute inset-0 bg-linear-to-r from-purple-500/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-purple-500/20 to-transparent" />
 
-              <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
 
-              <span className="bg-purple-500 px-4 py-2 rounded-full text-sm">
-                  lançamentos da semana
-              </span>
+          <span className="bg-purple-500 px-4 py-2 rounded-full text-sm">
+            lançamentos da semana
+          </span>
 
-              <h1 className="text-6xl font-black mt-6">
-                  Calendário
-              </h1>
+          <h1 className="text-6xl font-black mt-6">
+            Calendário
+          </h1>
 
-              <p className="text-zinc-400 text-lg mt-6 max-w-2xl">
-                  Fique por dentro dos próximos episódios que serão lançados
-              </p>
+          <p className="text-zinc-400 text-lg mt-6 max-w-2xl">
+            Fique por dentro dos próximos episódios que serão lançados
+          </p>
 
-          </div>
+        </div>
 
       </section>
 
@@ -82,7 +82,7 @@ export default async function SchedulePage() {
 
                 {/* GRID */}
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 items-stretch">
 
                   {dayDramas.map((drama) => {
 
@@ -96,14 +96,14 @@ export default async function SchedulePage() {
                       <Link
                         key={drama.id}
                         href={`/drama/${drama.slug}`}
-                        className="group"
+                        className="group h-full"
                       >
 
-                        <div className="bg-[#18181F] border border-white/5 rounded-3xl overflow-hidden hover:border-purple-500/50 transition">
+                        <div className="bg-[#18181F] rounded-3xl overflow-hidden border border-white/5 hover:border-purple-500/20 transition h-full flex flex-col">
 
                           {/* IMAGE */}
 
-                          <div className="relative h-105 overflow-hidden">
+                          <div className="relative h-80 overflow-hidden shrink-0">
 
                             <img
                               src={drama.coverImage}
@@ -141,13 +141,15 @@ export default async function SchedulePage() {
 
                           {/* CONTENT */}
 
-                          <div className="p-6">
+                          <div className="p-6 flex flex-col flex-1">
+
+                            {/* TOP */}
 
                             <div className="flex items-start justify-between gap-4">
 
-                              <div>
+                              <div className="flex-1">
 
-                                <h3 className="text-2xl font-bold">
+                                <h3 className="text-2xl font-bold line-clamp-2 min-h-16">
 
                                   {drama.title}
 
@@ -161,7 +163,7 @@ export default async function SchedulePage() {
 
                               </div>
 
-                              <div className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-xl text-sm font-semibold">
+                              <div className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-xl text-sm font-semibold shrink-0">
 
                                 ⭐ {drama.rating}
 
@@ -183,11 +185,33 @@ export default async function SchedulePage() {
 
                             {/* SYNOPSIS */}
 
-                            <p className="text-zinc-400 text-sm leading-relaxed mt-5 line-clamp-3">
+                            <p className="text-zinc-400 text-sm leading-7 mt-5 line-clamp-3 min-h-21">
 
                               {drama.description}
 
                             </p>
+
+                            {/* FOOTER */}
+
+                            <div className="mt-auto pt-6">
+
+                              <div className="flex items-center justify-between">
+
+                                <span className="text-sm text-zinc-500">
+
+                                  Novo episódio
+
+                                </span>
+
+                                <span className="text-sm font-semibold text-purple-400">
+
+                                  {drama.scheduleTime}
+
+                                </span>
+
+                              </div>
+
+                            </div>
 
                           </div>
 
