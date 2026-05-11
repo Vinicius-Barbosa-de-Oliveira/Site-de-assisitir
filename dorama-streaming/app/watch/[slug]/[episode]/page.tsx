@@ -5,6 +5,12 @@ import { prisma } from "@/lib/prisma";
 
 import { notFound } from "next/navigation";
 
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
+
+import VideoPlayer from "@/components/VideoPlayer";
+
 import Link from "next/link";
 import Image from "next/image";
 
@@ -19,14 +25,19 @@ export default async function WatchPage({
   params,
 }: Props) {
 
+  const session =
+    await getServerSession(authOptions);
+
   const { slug, episode } =
     await params;
 
   const drama =
     await prisma.drama.findUnique({
+
       where: {
         slug,
       },
+
       include: {
         episodes: {
           orderBy: {
@@ -34,6 +45,7 @@ export default async function WatchPage({
           },
         },
       },
+
     });
 
   if (!drama) {
@@ -50,6 +62,35 @@ export default async function WatchPage({
     notFound();
   }
 
+  let progress = null;
+
+  if (session?.user?.email) {
+
+    const user =
+      await prisma.user.findUnique({
+        where: {
+          email: session.user.email,
+        },
+      });
+
+    if (user) {
+
+      progress =
+        await prisma.watchProgress.findUnique({
+
+          where: {
+            userId_episodeId: {
+              userId: user.id,
+              episodeId: currentEpisode.id,
+            },
+          },
+
+        });
+
+    }
+
+  }
+
   const currentIndex =
     drama.episodes.findIndex(
       (ep) => ep.id === currentEpisode.id
@@ -62,6 +103,7 @@ export default async function WatchPage({
     drama.episodes[currentIndex - 1];
 
   return (
+
     <main className="bg-[#0F0F14] min-h-screen text-white">
 
       <Navbar />
@@ -76,10 +118,10 @@ export default async function WatchPage({
 
             <div className="bg-black rounded-3xl overflow-hidden aspect-video relative">
 
-              <iframe
-                src={currentEpisode.videoUrl}
-                allowFullScreen
-                className="w-full h-full"
+              <VideoPlayer
+                episodeId={currentEpisode.id}
+                videoUrl={currentEpisode.videoUrl}
+                startTime={progress?.currentTime || 0}
               />
 
             </div>
@@ -97,9 +139,7 @@ export default async function WatchPage({
               </h1>
 
               <p className="text-zinc-400 mt-4 max-w-4xl leading-7">
-
                 {drama.description}
-
               </p>
 
               <div className="flex flex-wrap gap-4 mt-5 text-sm text-zinc-400">
@@ -125,21 +165,25 @@ export default async function WatchPage({
             <div className="flex flex-wrap gap-4 mt-8">
 
               {nextEpisode && (
+
                 <Link
                   href={`/watch/${slug}/${nextEpisode.number}`}
                   className="bg-purple-500 hover:bg-purple-600 px-6 py-3 rounded-xl font-semibold transition"
                 >
                   Próximo Episódio
                 </Link>
+
               )}
 
               {previousEpisode && (
+
                 <Link
                   href={`/watch/${slug}/${previousEpisode.number}`}
                   className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl transition"
                 >
                   Episódio Anterior
                 </Link>
+
               )}
 
               <button className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl transition">
@@ -206,7 +250,7 @@ export default async function WatchPage({
 
             </div>
 
-            <div className="space-y-4 max-h-200 overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-212.5 overflow-y-auto pr-2">
 
               {drama.episodes.map((ep) => (
 
@@ -214,8 +258,7 @@ export default async function WatchPage({
                   href={`/watch/${slug}/${ep.number}`}
                   key={ep.id}
                   className={`block p-4 rounded-2xl cursor-pointer transition ${
-                    ep.number.toString() ===
-                    episode
+                    ep.number.toString() === episode
                       ? "bg-purple-500"
                       : "bg-black/20 hover:bg-black/40"
                   }`}
@@ -263,5 +306,7 @@ export default async function WatchPage({
       <Footer />
 
     </main>
+
   );
+
 }
