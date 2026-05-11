@@ -97,18 +97,18 @@ export default async function ProfilePage() {
                 </p>
 
                 <div className="flex gap-4">
-                  <link 
+                  <Link
                     href="/profile/edit"
                     className="px-6 py-3 rounded-xl bg-purple-500 hover:bg-purple-600 transition font-semibold"
                   >
                     Editar Perfil
-                  </link>
-                  <link 
+                  </Link>
+                  <Link
                     href="/profile/settings"
                     className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition font-semibold"
                   >
                     Configurações
-                  </link>
+                  </Link>
                 </div>
 
               </div>
