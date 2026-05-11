@@ -1,9 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
+import { prisma } from "@/lib/prisma";
 
 interface Props {
   dramas: any[];
 }
+
+const latestEpisodes = await prisma.episode.findMany({
+  take: 8,
+  orderBy: {
+    createdAt: "desc",
+  },
+});
 
 export default function LatestEpisodes({
   dramas,

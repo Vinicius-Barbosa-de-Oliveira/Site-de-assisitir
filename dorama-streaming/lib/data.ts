@@ -37,11 +37,12 @@ export async function getDramaBySlug(slug: string) {
 }
 
 export async function getLatestEpisodes() {
+
   return prisma.episode.findMany({
     take: 12,
 
     orderBy: {
-      releaseDate: "desc",
+      createdAt: "desc",
     },
 
     include: {

@@ -53,6 +53,8 @@ model Episode {
   duration     Int
   releaseDate  DateTime
   createdAt    DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
   watchProgress WatchProgress[]
 
   dramaId String
@@ -94,6 +96,42 @@ model WatchProgress {
 
   @@unique([userId, episodeId])
 
+}
+model Comment {
+  id        String   @id @default(cuid())
+
+  content   String
+
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User @relation(fields: [userId], references: [id])
+
+  episodeId String
+  episode   Episode @relation(fields: [episodeId], references: [id])
+}
+model Rating {
+
+  id      String @id @default(cuid())
+
+  value   Int
+
+  userId  String
+  dramaId String
+
+  user    User  @relation(fields: [userId], references: [id])
+
+  drama   Drama @relation(fields: [dramaId], references: [id])
+
+  @@unique([userId, dramaId])
+}
+model Genre {
+
+  id    String @id @default(cuid())
+
+  name  String @unique
+
+  dramas Drama[]
 }
 
 enum Role {
