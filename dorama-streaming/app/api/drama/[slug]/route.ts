@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  context: { params: Promise<{ slug: string }> }
+  context: { params: { slug: string } }
 ) {
-  const { slug } = await context.params;
+  const { slug } = context.params;
 
   const drama = await prisma.drama.findUnique({
     where: {

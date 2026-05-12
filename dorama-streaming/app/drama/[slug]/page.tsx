@@ -29,6 +29,7 @@ export default async function DramaPage({
 
   const dramas = await getAllDramas();
   const { slug } = await params;
+  console.log(slug);
 
   const drama =
     await getDramaBySlug(slug);
@@ -122,6 +123,17 @@ export default async function DramaPage({
                 <span className="bg-white/10 px-4 py-2 rounded-xl">
                   ⭐ {drama.rating}
                 </span>
+
+                {drama.genres.map((genre) => (
+
+                  <span
+                    key={genre.id}
+                    className="bg-purple-500/10 border border-purple-500/20 text-purple-300 px-4 py-2 rounded-xl"
+                  >
+                    {genre.name}
+                  </span>
+
+                ))}
 
               </div>
 

@@ -16,122 +16,119 @@ model User {
   image     String?
   createdAt DateTime @default(now())
 
-  favorites Favorite[]
+  favorites     Favorite[]
   watchProgress WatchProgress[]
+  comments      Comment[]
+  ratings       Rating[]
 }
 
 model Drama {
-  id            String    @id @default(cuid())
-  title         String
-  slug          String    @unique
-  description   String
-  coverImage    String
-  bannerImage   String
-  trailerUrl    String?
-  country       String
-  year          Int
-  rating        Float
-  status        String
-  genres        String[]
-  favorites Favorite[]
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  description String
+  coverImage  String
+  bannerImage String
+  trailerUrl  String?
+  country     String
+  year        Int
+  rating      Float
+  status      String
 
-  scheduleDay   String?
-  scheduleTime  String?
+  favorites   Favorite[]
+  genres      Genre[]
+  ratings     Rating[]
+  episodes Episode[]
 
-  createdAt     DateTime @default(now())
+  scheduleDay  String?
+  scheduleTime String?
 
-  episodes      Episode[]
+  createdAt DateTime @default(now())
 }
 
 model Episode {
-  id           String   @id @default(cuid())
-  number       Int
-  title        String
-  description  String?
-  thumbnail    String
-  videoUrl     String
-  duration     Int
-  releaseDate  DateTime
-  createdAt    DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id          String   @id @default(cuid())
+  number      Int
+  title       String
+  description String?
+  thumbnail   String
+  videoUrl    String
+  duration    Int
+  releaseDate DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   watchProgress WatchProgress[]
+  comments      Comment[]
 
   dramaId String
-  drama   Drama @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  drama   Drama  @relation(fields: [dramaId], references: [id], onDelete: Cascade)
 }
 
 model Favorite {
-
-  id        String   @id @default(cuid())
-
-  userId    String
-  dramaId   String
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  drama     Drama    @relation(fields: [dramaId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, dramaId])
-
-}
-model WatchProgress {
-
-  id          String   @id @default(cuid())
-
-  userId      String
-  episodeId   String
-
-  currentTime Float
-
-  completed   Boolean  @default(false)
-
-  updatedAt   DateTime @updatedAt
-
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  episode      Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, episodeId])
-
-}
-model Comment {
-  id        String   @id @default(cuid())
-
-  content   String
-
-  createdAt DateTime @default(now())
-
-  userId    String
-  user      User @relation(fields: [userId], references: [id])
-
-  episodeId String
-  episode   Episode @relation(fields: [episodeId], references: [id])
-}
-model Rating {
-
-  id      String @id @default(cuid())
-
-  value   Int
+  id String @id @default(cuid())
 
   userId  String
   dramaId String
 
-  user    User  @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  drama   Drama @relation(fields: [dramaId], references: [id])
+  drama Drama @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 
   @@unique([userId, dramaId])
 }
+
+model WatchProgress {
+  id String @id @default(cuid())
+
+  userId    String
+  episodeId String
+
+  currentTime Float
+
+  completed Boolean @default(false)
+
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  episode Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+}
+
+model Comment {
+  id String @id @default(cuid())
+
+  content String
+
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  episodeId String
+  episode   Episode @relation(fields: [episodeId], references: [id])
+}
+
+model Rating {
+  id       String @id @default(cuid())
+  value    Int
+  userId   String
+  dramaId  String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  drama    Drama  @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dramaId])
+}
+
 model Genre {
+  id      String   @id @default(cuid())
+  name    String   @unique
 
-  id    String @id @default(cuid())
-
-  name  String @unique
-
-  dramas Drama[]
+  dramas  Drama[]
 }
 
 enum Role {

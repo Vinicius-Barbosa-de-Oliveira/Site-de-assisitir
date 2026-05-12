@@ -1,52 +1,66 @@
-    import { prisma } from "./prisma";
+import { prisma } from "./prisma";
 
-    export async function getAllDramas() {
+export async function getAllDramas() {
 
-        const dramas = await prisma.drama.findMany({
-            include: {
+    const dramas = await prisma.drama.findMany({
+        include: {
+
+            genres: true,
+
             episodes: {
                 orderBy: {
-                number: "desc",
+                    number: "desc",
                 },
                 take: 1,
             },
-            },
-        });
+        },
+    });
 
-        return dramas.map((drama) => ({
-            ...drama,
+    return dramas.map((drama) => ({
+        ...drama,
 
-            latestEpisode:
+        latestEpisode:
             drama.episodes[0] || null,
-        }));
-    }
+    }));
+}
 
 export async function getDramaBySlug(slug: string) {
+
     return prisma.drama.findUnique({
+
         where: {
             slug,
         },
+
         include: {
+
+            genres: true,
+
             episodes: {
                 orderBy: {
                     number: "asc",
                 },
             },
+
         },
+
     });
 }
 
 export async function getLatestEpisodes() {
 
-  return prisma.episode.findMany({
-    take: 12,
+    return prisma.episode.findMany({
 
-    orderBy: {
-      createdAt: "desc",
-    },
+        take: 12,
 
-    include: {
-      drama: true,
-    },
-  });
+        orderBy: {
+            updatedAt: "desc",
+        },
+
+        include: {
+            drama: true,
+        },
+
+    });
+
 }

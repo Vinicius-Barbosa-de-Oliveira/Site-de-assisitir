@@ -4,16 +4,16 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
 interface Props {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  };
 }
 
 export default async function EditEpisodePage({
   params,
 }: Props) {
 
-  const { id } = await params;
+  const { id } = params;
 
   const episode = await prisma.episode.findUnique({
     where: {

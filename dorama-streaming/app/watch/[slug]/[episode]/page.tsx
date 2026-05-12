@@ -15,10 +15,10 @@ import Link from "next/link";
 import Image from "next/image";
 
 type Props = {
-  params: Promise<{
+  params: {
     slug: string;
     episode: string;
-  }>;
+  };
 };
 
 export default async function WatchPage({
@@ -28,8 +28,7 @@ export default async function WatchPage({
   const session =
     await getServerSession(authOptions);
 
-  const { slug, episode } =
-    await params;
+  const { slug, episode } = params;
 
   const drama =
     await prisma.drama.findUnique({
