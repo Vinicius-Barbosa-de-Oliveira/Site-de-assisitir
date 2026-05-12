@@ -73,6 +73,12 @@ export async function getGenres() {
       name: "asc",
     },
 
+    include: {
+      dramas: {
+        take: 12,
+      },
+    },
+
   });
 
 }
