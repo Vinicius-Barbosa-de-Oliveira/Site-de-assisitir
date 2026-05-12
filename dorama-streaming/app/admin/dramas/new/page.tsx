@@ -1,6 +1,11 @@
+import { connect } from "tls";
 import { createDrama } from "../actions";
+import { getGenres } from "@/lib/data";
+import { Genre } from "@prisma/client";
 
-export default function NewDramaPage() {
+export default async function NewDramaPage() {
+  const genres: Genre[] =
+    await getGenres();
   return (
     <main className="min-h-screen bg-[#0B0B11] text-white">
 
@@ -92,6 +97,57 @@ export default function NewDramaPage() {
                         placeholder="Digite a sinopse do dorama..."
                         className="w-full bg-black/20 border border-white/5 focus:border-purple-500 outline-none rounded-2xl px-5 py-4 transition resize-none"
                       />
+                    </div>
+
+                    <div className="space-y-3">
+
+                      <label className="text-sm font-semibold text-white/70">
+                        Gêneros
+                      </label>
+
+                      <div className="bg-[#18181F] border border-white/5 rounded-3xl p-5">
+
+                        <select
+                          name="genres"
+                          multiple
+                          className="
+                            w-full
+                            min-h-56
+                            bg-transparent
+                            text-white
+                            outline-none
+                            space-y-2
+                          "
+                        >
+
+                          {genres.map((genre) => (
+
+                            <option
+                              key={genre.id}
+                              value={genre.id}
+                              className="
+                                bg-[#111118]
+                                text-white
+                                rounded-xl
+                                px-4
+                                py-3
+                                my-2
+                                hover:bg-purple-500
+                              "
+                            >
+                              {genre.name}
+                            </option>
+
+                          ))}
+
+                        </select>
+
+                      </div>
+
+                      <p className="text-xs text-zinc-500">
+                        Segure CTRL para selecionar múltiplos gêneros
+                      </p>
+
                     </div>
 
                   </div>

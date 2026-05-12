@@ -3,61 +3,35 @@ import { notFound } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
 
+import { updateEpisode } from "../../actions";
+
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function EditEpisodePage({
   params,
 }: Props) {
 
-  const { id } = params;
+  const { id } = await params;
 
-  const episode = await prisma.episode.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      drama: true,
-    },
-  });
+  const episode =
+    await prisma.episode.findUnique({
 
-  if (!episode) {
-    notFound();
-  }
-
-  async function updateEpisode(
-    formData: FormData
-  ) {
-    "use server";
-
-    await prisma.episode.update({
       where: {
         id,
       },
-      data: {
-        title: formData.get("title") as string,
 
-        number: Number(
-          formData.get("number")
-        ),
-
-        thumbnail:
-          formData.get("thumbnail") as string,
-
-        videoUrl:
-          formData.get("videoUrl") as string,
-
-        duration: Number(
-          formData.get("duration")
-        ),
-
-        description:
-          formData.get("description") as string,
+      include: {
+        drama: true,
       },
+
     });
+
+  if (!episode) {
+    notFound();
   }
 
   return (
@@ -65,7 +39,7 @@ export default async function EditEpisodePage({
 
       {/* HERO */}
 
-      <section className="relative h-87.5 overflow-hidden">
+      <section className="relative h-90 overflow-hidden">
 
         <Image
           src={episode.thumbnail}
@@ -116,7 +90,10 @@ export default async function EditEpisodePage({
       <section className="max-w-5xl mx-auto px-6 py-14">
 
         <form
-          action={updateEpisode}
+          action={updateEpisode.bind(
+            null,
+            episode.id
+          )}
           className="bg-[#18181F] border border-white/5 rounded-3xl p-8"
         >
 

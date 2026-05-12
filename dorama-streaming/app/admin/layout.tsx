@@ -41,6 +41,27 @@ export default function AdminLayout({
               🎞 Episódios
             </Link>
 
+            <Link
+              href="/admin/genres"
+              className="flex items-center gap-3 px-5 py-4 rounded-2xl hover:bg-white/5 transition"
+            >
+              � Gêneros
+            </Link>
+
+            <Link
+              href="/admin/users"
+              className="flex items-center gap-3 px-5 py-4 rounded-2xl hover:bg-white/5 transition"
+            >
+              👥 Usuários
+            </Link>
+
+            <Link
+              href="/"
+              className="bg-white/5 hover:bg-white/10 transition px-8 py-5 rounded-3xl font-bold border border-white/5 mt-6 block text-center"
+            >
+              Sair
+            </Link>
+
           </nav>
 
         </aside>

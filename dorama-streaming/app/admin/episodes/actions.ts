@@ -44,23 +44,19 @@ export async function updateEpisode(
 ) {
 
   await prisma.episode.update({
+
     where: {
       id,
     },
 
     data: {
-      dramaId:
-        formData.get("dramaId") as string,
-
-      number: Number(
-        formData.get("number")
-      ),
 
       title:
         formData.get("title") as string,
 
-      description:
-        formData.get("description") as string,
+      number: Number(
+        formData.get("number")
+      ),
 
       thumbnail:
         formData.get("thumbnail") as string,
@@ -72,11 +68,13 @@ export async function updateEpisode(
         formData.get("duration")
       ),
 
-      releaseDate: new Date(
-        formData.get("releaseDate") as string
-      ),
+      description:
+        formData.get("description") as string,
+
     },
+
   });
+
 }
 
 export async function deleteEpisode(

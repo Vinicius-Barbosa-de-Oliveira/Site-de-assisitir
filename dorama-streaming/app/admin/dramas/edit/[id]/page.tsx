@@ -2,78 +2,50 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
+import { getGenres } from "@/lib/data";
+
+import { Genre } from "@prisma/client";
+
+import { updateDrama } from "../../actions";
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function EditDramaPage({
   params,
 }: Props) {
 
-  const { id } = params;
+  const { id } = await params;
 
-  const drama = await prisma.drama.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      episodes: {
-        orderBy: {
-          number: "asc",
-        },
-      },
-    },
-  });
+  const genres: Genre[] =
+    await getGenres();
 
-  if (!drama) {
-    notFound();
-  }
+  const drama =
+    await prisma.drama.findUnique({
 
-  async function updateDrama(
-    formData: FormData
-  ) {
-    "use server";
-
-    await prisma.drama.update({
       where: {
         id,
       },
-      data: {
-        title: formData.get("title") as string,
-        slug: formData.get("slug") as string,
-        description:
-          formData.get("description") as string,
 
-        bannerImage:
-          formData.get("bannerImage") as string,
+      include: {
 
-        coverImage:
-          formData.get("coverImage") as string,
+        genres: true,
 
-        country:
-          formData.get("country") as string,
+        episodes: {
+          orderBy: {
+            number: "asc",
+          },
+        },
 
-        year: Number(
-          formData.get("year")
-        ),
-
-        rating: Number(
-          formData.get("rating")
-        ),
-
-        status:
-          formData.get("status") as string,
-
-        scheduleDay:
-          formData.get("scheduleDay") as string,
-
-        scheduleTime:
-          formData.get("scheduleTime") as string,
       },
+
     });
+
+  if (!drama) {
+    notFound();
   }
 
   return (
@@ -152,8 +124,11 @@ export default async function EditDramaPage({
           {/* FORM */}
 
           <form
-            action={updateDrama}
-            className="bg-[#18181F] border border-white/5 rounded-3xl p-8"
+            action={updateDrama.bind(
+              null,
+              drama.id
+            )}
+            className="space-y-6"
           >
 
             <div className="mb-10">
@@ -340,6 +315,73 @@ export default async function EditDramaPage({
 
               </div>
 
+              {/* GÊNEROS */}
+
+              <div className="space-y-4">
+
+                <label className="text-sm font-semibold text-white/70">
+                  Gêneros
+                </label>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+
+                  {genres.map((genre) => {
+
+                  const isSelected =
+                    drama.genres.some(
+                      (g) => g.id === genre.id
+                    );
+
+                  return (
+
+                    <label
+                      key={genre.id}
+                      className="cursor-pointer"
+                    >
+
+                      <input
+                        type="checkbox"
+                        name="genres"
+                        value={genre.id}
+                        defaultChecked={isSelected}
+                        className="peer hidden"
+                      />
+
+                      <div
+                        className="
+                          rounded-2xl
+                          border
+                          border-white/5
+                          bg-[#18181F]
+                          p-4
+                          text-center
+                          font-medium
+                          transition-all
+                          duration-200
+
+                          hover:border-purple-500
+                          hover:bg-purple-500/10
+
+                          peer-checked:border-purple-500
+                          peer-checked:bg-purple-500/15
+                          peer-checked:text-purple-300
+                          peer-checked:shadow-lg
+                          peer-checked:shadow-purple-500/10
+                        "
+                      >
+
+                        {genre.name}
+
+                      </div>
+
+                    </label>
+
+                  );
+
+                })}
+
+              </div>
+            </div>
               <button
                 type="submit"
                 className="w-full bg-purple-500 hover:bg-purple-600 transition py-4 rounded-2xl font-bold text-lg"
@@ -398,49 +440,6 @@ export default async function EditDramaPage({
                   </span>
 
                 </div>
-
-              </div>
-
-            </div>
-
-            <div className="bg-[#18181F] border border-white/5 rounded-3xl p-8">
-
-              <h3 className="text-2xl font-bold mb-6">
-                Episódios
-              </h3>
-
-              <div className="space-y-4 max-h-130 overflow-y-auto pr-2">
-
-                {drama.episodes.map((episode) => (
-
-                  <div
-                    key={episode.id}
-                    className="bg-[#0F0F14] rounded-2xl p-4 flex gap-4"
-                  >
-
-                    <Image
-                      src={episode.thumbnail}
-                      alt={episode.title}
-                      width={120}
-                      height={70}
-                      className="rounded-xl object-cover h-17.5"
-                    />
-
-                    <div>
-
-                      <span className="text-purple-400 text-sm">
-                        EP {episode.number}
-                      </span>
-
-                      <h4 className="font-semibold mt-1 line-clamp-1">
-                        {episode.title}
-                      </h4>
-
-                    </div>
-
-                  </div>
-
-                ))}
 
               </div>
 

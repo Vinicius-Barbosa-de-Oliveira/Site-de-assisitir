@@ -1,13 +1,19 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
 export async function createDrama(
   formData: FormData
 ) {
 
+  const genreIds =
+    formData.getAll("genres") as string[];
+
   await prisma.drama.create({
+
     data: {
+
       title:
         formData.get("title") as string,
 
@@ -42,8 +48,19 @@ export async function createDrama(
 
       scheduleTime:
         formData.get("scheduleTime") as string,
+
+      genres: {
+
+        connect: genreIds.map((id) => ({
+          id,
+        })),
+
+      },
+
     },
+
   });
+
 }
 
 export async function updateDrama(
@@ -51,12 +68,17 @@ export async function updateDrama(
   formData: FormData
 ) {
 
+  const genreIds =
+    formData.getAll("genres") as string[];
+
   await prisma.drama.update({
+
     where: {
       id,
     },
 
     data: {
+
       title:
         formData.get("title") as string,
 
@@ -91,16 +113,33 @@ export async function updateDrama(
 
       scheduleTime:
         formData.get("scheduleTime") as string,
+
+      genres: {
+
+        set: genreIds.map((id) => ({
+          id,
+        })),
+
+      },
+
     },
+
   });
+
+  redirect(
+    "/admin/dramas?success=updated"
+  );
+
 }
 
 export async function deleteDrama(id: string) {
 
   await prisma.drama.delete({
+
     where: {
       id,
     },
+
   });
 
 }

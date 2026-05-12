@@ -64,3 +64,15 @@ export async function getLatestEpisodes() {
     });
 
 }
+
+export async function getGenres() {
+
+  return prisma.genre.findMany({
+
+    orderBy: {
+      name: "asc",
+    },
+
+  });
+
+}
