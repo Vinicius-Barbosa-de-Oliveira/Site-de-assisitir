@@ -22,7 +22,7 @@ export default async function AdminEpisodesPage() {
 
           {/* HERO */}
 
-          <div className="relative overflow-hidden rounded-4xlrder border-white/5 bg-[#18181F]">
+          <div className="relative overflow-hidden rounded-4xl border border-white/5 bg-[#18181F]">
 
             <div className="absolute inset-0 bg-linear-to-r from-purple-500/20 via-transparent to-transparent" />
 
