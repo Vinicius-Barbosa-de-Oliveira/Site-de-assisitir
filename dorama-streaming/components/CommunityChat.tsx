@@ -395,7 +395,7 @@ export default function CommunityChat({
                         text-zinc-300
                         leading-8
                         whitespace-pre-wrap
-                        break-words
+                        wrap-break-word
                         text-[15px]
                       "
                     >

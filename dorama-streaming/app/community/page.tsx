@@ -44,10 +44,10 @@ export default async function CommunityPage() {
 
         <div className="
           absolute
-          top-[-200px]
-          left-[-100px]
-          w-[500px]
-          h-[500px]
+          -top-50
+          -left-25
+          w-125
+          h-125
           bg-purple-500/20
           blur-[180px]
           rounded-full
@@ -55,10 +55,10 @@ export default async function CommunityPage() {
 
         <div className="
           absolute
-          bottom-[-250px]
-          right-[-150px]
-          w-[600px]
-          h-[600px]
+          -bottom-62.5
+          -right-37.5
+          w-150
+          h-150
           bg-fuchsia-500/10
           blur-[200px]
           rounded-full
@@ -94,7 +94,7 @@ export default async function CommunityPage() {
           <div className="
             absolute
             inset-0
-            bg-gradient-to-br
+            bg-linear-to-br
             from-purple-500/10
             via-transparent
             to-fuchsia-500/5
@@ -305,7 +305,7 @@ export default async function CommunityPage() {
                 <div className="
                   absolute
                   inset-0
-                  bg-gradient-to-r
+                  bg-linear-to-r
                   from-purple-500/10
                   to-fuchsia-500/10
                 " />
