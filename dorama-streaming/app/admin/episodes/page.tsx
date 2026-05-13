@@ -5,7 +5,7 @@ import { deleteEpisode } from "./actions";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminEpisodesPage() {
-
+    
   const episodes = await prisma.episode.findMany({
     include: {
       drama: true,

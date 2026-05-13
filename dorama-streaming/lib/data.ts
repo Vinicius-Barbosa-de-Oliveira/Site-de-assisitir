@@ -82,3 +82,25 @@ export async function getGenres() {
   });
 
 }
+
+export async function getEpisodeComments(
+  episodeId: string
+) {
+
+  return prisma.comment.findMany({
+
+    where: {
+      episodeId,
+    },
+
+    include: {
+      user: true,
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+
+  });
+
+}

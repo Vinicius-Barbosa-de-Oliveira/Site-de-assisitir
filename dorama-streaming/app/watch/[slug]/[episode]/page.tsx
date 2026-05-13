@@ -1,25 +1,27 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-
 import { prisma } from "@/lib/prisma";
-
 import { notFound } from "next/navigation";
-
 import { getServerSession } from "next-auth";
-
 import { authOptions } from "@/lib/auth";
-
 import VideoPlayer from "@/components/VideoPlayer";
-
 import Link from "next/link";
 import Image from "next/image";
 
-type Props = {
-  params: {
+import {
+  getEpisodeComments,
+} from "@/lib/data";
+
+import {
+  createComment,
+} from "@/app/actions/comment-actions";
+
+interface Props {
+  params: Promise<{
     slug: string;
     episode: string;
-  };
-};
+  }>;
+}
 
 export default async function WatchPage({
   params,
@@ -28,7 +30,10 @@ export default async function WatchPage({
   const session =
     await getServerSession(authOptions);
 
-  const { slug, episode } = params;
+  const {
+    slug,
+    episode,
+  } = await params;
 
   const drama =
     await prisma.drama.findUnique({
@@ -38,11 +43,15 @@ export default async function WatchPage({
       },
 
       include: {
+
+        genres: true,
+
         episodes: {
           orderBy: {
             number: "asc",
           },
         },
+
       },
 
     });
@@ -78,10 +87,14 @@ export default async function WatchPage({
         await prisma.watchProgress.findUnique({
 
           where: {
+
             userId_episodeId: {
+
               userId: user.id,
               episodeId: currentEpisode.id,
+
             },
+
           },
 
         });
@@ -100,6 +113,11 @@ export default async function WatchPage({
 
   const previousEpisode =
     drama.episodes[currentIndex - 1];
+
+  const comments =
+    await getEpisodeComments(
+      currentEpisode.id
+    );
 
   return (
 
@@ -120,7 +138,9 @@ export default async function WatchPage({
               <VideoPlayer
                 episodeId={currentEpisode.id}
                 videoUrl={currentEpisode.videoUrl}
-                startTime={progress?.currentTime || 0}
+                startTime={
+                  progress?.currentTime || 0
+                }
               />
 
             </div>
@@ -141,19 +161,39 @@ export default async function WatchPage({
                 {drama.description}
               </p>
 
-              <div className="flex flex-wrap gap-4 mt-5 text-sm text-zinc-400">
+              <div className="flex flex-wrap gap-3 mt-5">
 
-                <span>
+                <span className="bg-white/10 px-4 py-2 rounded-2xl text-sm">
                   ⭐ {drama.rating}
                 </span>
 
-                <span>
+                <span className="bg-white/10 px-4 py-2 rounded-2xl text-sm">
                   {drama.country}
                 </span>
 
-                <span>
+                <span className="bg-white/10 px-4 py-2 rounded-2xl text-sm">
                   {currentEpisode.duration} min
                 </span>
+
+                {drama.genres.map((genre) => (
+
+                  <span
+                    key={genre.id}
+                    className="
+                      bg-purple-500/10
+                      border
+                      border-purple-500/20
+                      text-purple-300
+                      px-4
+                      py-2
+                      rounded-2xl
+                      text-sm
+                    "
+                  >
+                    {genre.name}
+                  </span>
+
+                ))}
 
               </div>
 
@@ -163,31 +203,42 @@ export default async function WatchPage({
 
             <div className="flex flex-wrap gap-4 mt-8">
 
-              {nextEpisode && (
-
-                <Link
-                  href={`/watch/${slug}/${nextEpisode.number}`}
-                  className="bg-purple-500 hover:bg-purple-600 px-6 py-3 rounded-xl font-semibold transition"
-                >
-                  Próximo Episódio
-                </Link>
-
-              )}
-
               {previousEpisode && (
 
                 <Link
                   href={`/watch/${slug}/${previousEpisode.number}`}
-                  className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl transition"
+                  className="
+                    bg-white/10
+                    hover:bg-white/20
+                    px-6
+                    py-3
+                    rounded-xl
+                    transition
+                  "
                 >
-                  Episódio Anterior
+                  ← Episódio Anterior
                 </Link>
 
               )}
 
-              <button className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl transition">
-                ❤️ Favoritar
-              </button>
+              {nextEpisode && (
+
+                <Link
+                  href={`/watch/${slug}/${nextEpisode.number}`}
+                  className="
+                    bg-purple-500
+                    hover:bg-purple-600
+                    px-6
+                    py-3
+                    rounded-xl
+                    font-semibold
+                    transition
+                  "
+                >
+                  Próximo Episódio →
+                </Link>
+
+              )}
 
             </div>
 
@@ -199,33 +250,153 @@ export default async function WatchPage({
                 Comentários
               </h2>
 
-              <div className="space-y-6">
+              {session ? (
 
-                <div className="bg-[#18181F] p-6 rounded-2xl">
+                <form
+                  action={createComment.bind(
+                    null,
+                    currentEpisode.id
+                  )}
+                  className="mb-10"
+                >
 
-                  <div className="flex items-center gap-4">
+                  <textarea
+                    name="content"
+                    rows={4}
+                    required
+                    placeholder="Escreva seu comentário..."
+                    className="
+                      w-full
+                      bg-[#18181F]
+                      border
+                      border-white/5
+                      rounded-2xl
+                      p-5
+                      outline-none
+                      focus:border-purple-500
+                      resize-none
+                    "
+                  />
 
-                    <div className="w-12 h-12 bg-purple-500 rounded-full" />
+                  <button
+                    type="submit"
+                    className="
+                      mt-4
+                      bg-purple-500
+                      hover:bg-purple-600
+                      px-6
+                      py-3
+                      rounded-2xl
+                      font-semibold
+                      transition
+                    "
+                  >
+                    Comentar
+                  </button>
 
-                    <div>
+                </form>
 
-                      <h3 className="font-semibold">
-                        Usuário
-                      </h3>
+              ) : (
 
-                      <p className="text-zinc-400 text-sm">
-                        há 2 horas
-                      </p>
+                <div
+                  className="
+                    mb-10
+                    bg-[#18181F]
+                    border
+                    border-white/5
+                    rounded-2xl
+                    p-6
+                  "
+                >
 
-                    </div>
-
-                  </div>
-
-                  <p className="text-zinc-300 mt-4">
-                    Esse episódio foi absurdo 🔥
+                  <p className="text-zinc-300">
+                    Faça login para comentar.
                   </p>
 
                 </div>
+
+              )}
+
+              <div className="space-y-6">
+
+                {comments.length === 0 && (
+
+                  <div
+                    className="
+                      bg-[#18181F]
+                      border
+                      border-white/5
+                      rounded-3xl
+                      p-8
+                      text-center
+                      text-zinc-400
+                    "
+                  >
+                    Nenhum comentário ainda.
+                  </div>
+
+                )}
+
+                {comments.map((comment) => (
+
+                  <div
+                    key={comment.id}
+                    className="
+                      bg-[#18181F]
+                      border
+                      border-white/5
+                      rounded-3xl
+                      p-6
+                    "
+                  >
+
+                    <div className="flex items-center gap-3 mb-4">
+
+                      <div
+                        className="
+                          w-12
+                          h-12
+                          rounded-full
+                          bg-purple-500
+                          flex
+                          items-center
+                          justify-center
+                          font-bold
+                          text-lg
+                        "
+                      >
+                        {comment.user.name
+                          ?.charAt(0)
+                          .toUpperCase()}
+                      </div>
+
+                      <div>
+
+                        <h4 className="font-bold">
+                          {comment.user.name}
+                        </h4>
+
+                        <p className="text-zinc-500 text-sm">
+
+                          {new Date(
+                            comment.createdAt
+                          ).toLocaleDateString(
+                            "pt-BR"
+                          )}
+
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                    <p className="text-zinc-300 leading-relaxed whitespace-pre-line">
+                      {comment.content}
+                    </p>
+
+                  </div>
+
+                ))}
 
               </div>
 
@@ -235,7 +406,16 @@ export default async function WatchPage({
 
           {/* SIDEBAR */}
 
-          <aside className="bg-[#18181F] rounded-3xl p-6 h-fit sticky top-24">
+          <aside
+            className="
+              bg-[#18181F]
+              rounded-3xl
+              p-6
+              h-fit
+              sticky
+              top-24
+            "
+          >
 
             <div className="flex items-center justify-between mb-6">
 
@@ -256,16 +436,33 @@ export default async function WatchPage({
                 <Link
                   href={`/watch/${slug}/${ep.number}`}
                   key={ep.id}
-                  className={`block p-4 rounded-2xl cursor-pointer transition ${
-                    ep.number.toString() === episode
-                      ? "bg-purple-500"
-                      : "bg-black/20 hover:bg-black/40"
-                  }`}
+                  className={`
+                    block
+                    p-4
+                    rounded-2xl
+                    cursor-pointer
+                    transition
+
+                    ${
+                      ep.number.toString() === episode
+                        ? "bg-purple-500"
+                        : "bg-black/20 hover:bg-black/40"
+                    }
+                  `}
                 >
 
                   <div className="flex gap-4">
 
-                    <div className="relative w-28 h-16 rounded-xl overflow-hidden shrink-0">
+                    <div
+                      className="
+                        relative
+                        w-28
+                        h-16
+                        rounded-xl
+                        overflow-hidden
+                        shrink-0
+                      "
+                    >
 
                       <Image
                         src={ep.thumbnail}
