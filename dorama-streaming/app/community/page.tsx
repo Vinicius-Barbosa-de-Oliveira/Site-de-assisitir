@@ -9,7 +9,6 @@ import {
   CommunityMessage,
   User,
 } from "@prisma/client";
-import { sendCommunityMessage } from "../actions/community-actions";
 
 export default async function CommunityPage() {
 
@@ -108,7 +107,7 @@ export default async function CommunityPage() {
                 </h3>
 
                 <p className="text-zinc-400 mt-2 text-sm leading-relaxed">
-                  Converse sobre episódios, teorias e novos lançamentos.
+                  Converse sobre episódios, teorias e lançamentos.
                 </p>
 
               </div>
@@ -130,8 +129,7 @@ export default async function CommunityPage() {
           ">
 
             <CommunityChat
-            initialMessages={messages}
-            sendMessage={sendCommunityMessage}
+              initialMessages={messages}
             />
 
           </div>

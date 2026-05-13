@@ -1,51 +1,71 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+
 import { useRouter } from "next/navigation";
+
+import { sendCommunityMessage } from "@/app/actions/community-actions";
 
 type Message = {
   id: string;
   content: string;
   createdAt: Date;
+
   user: {
     name: string | null;
   };
 };
 
 interface Props {
-  initialMessages: MessageType[];
-  sendMessage: (formData: FormData) => Promise<void>;
+  initialMessages: Message[];
 }
 
 export default function CommunityChat({
   initialMessages,
-  sendMessage,
 }: Props) {
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] =
+    useState("");
+
   const [isPending, startTransition] =
     useTransition();
 
-  const router = useRouter();
+  const router =
+    useRouter();
 
   const bottomRef =
     useRef<HTMLDivElement>(null);
 
   useEffect(() => {
 
-    const interval = setInterval(() => {
-      router.refresh();
-    }, 3000);
+    const interval =
+      setInterval(() => {
 
-    return () => clearInterval(interval);
+        router.refresh();
+
+      }, 3000);
+
+    return () =>
+      clearInterval(interval);
 
   }, [router]);
 
   useEffect(() => {
 
-    bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
+    const container =
+      bottomRef.current?.parentElement?.parentElement;
+
+    if (container) {
+
+      container.scrollTop =
+        container.scrollHeight;
+        
+    }
 
   }, [initialMessages]);
 
@@ -55,9 +75,12 @@ export default function CommunityChat({
 
     e.preventDefault();
 
-    if (!message.trim()) return;
+    if (!message.trim()) {
+      return;
+    }
 
-    const formData = new FormData();
+    const formData =
+      new FormData();
 
     formData.append(
       "content",
@@ -66,7 +89,9 @@ export default function CommunityChat({
 
     startTransition(async () => {
 
-      await sendMessage(formData);
+      await sendCommunityMessage(
+        formData
+      );
 
       setMessage("");
 
@@ -86,95 +111,126 @@ export default function CommunityChat({
         className="
           flex-1
           overflow-y-auto
+          overflow-x-hidden
           rounded-3xl
           border
           border-white/5
           bg-[#18181F]
           p-6
-          space-y-6
           shadow-2xl
+          min-h-0
         "
       >
 
-        {initialMessages
-          .slice()
-          .reverse()
-          .map((message) => (
+        <div className="
+          flex
+          flex-col
+          justify-end
+          min-h-full
+          gap-6
+        ">
 
-          <div
-            key={message.id}
-            className="
-              flex
-              gap-4
-              items-start
-            "
-          >
+          {initialMessages.map((message) => (
 
             <div
+              key={message.id}
               className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-purple-500
                 flex
-                items-center
-                justify-center
-                font-bold
-                text-lg
-                shrink-0
+                gap-4
+                items-start
               "
             >
-              {message.user.name?.charAt(0)}
-            </div>
-
-            <div className="flex-1">
 
               <div
                 className="
-                  bg-[#0F0F14]
-                  border
-                  border-white/5
-                  rounded-3xl
-                  px-5
-                  py-4
+                  w-12
+                  h-12
+                  rounded-2xl
+                  bg-purple-500
+                  flex
+                  items-center
+                  justify-center
+                  font-bold
+                  text-lg
+                  shrink-0
                 "
               >
 
-                <div className="flex items-center gap-3 mb-2">
+                {message.user.name
+                  ?.charAt(0)
+                  ?.toUpperCase() || "U"}
 
-                  <h3 className="font-bold text-white">
-                    {message.user.name}
-                  </h3>
+              </div>
 
-                  <span className="text-xs text-zinc-500">
+              <div className="flex-1">
 
-                    {new Date(
-                      message.createdAt
-                    ).toLocaleTimeString(
-                      "pt-BR",
-                      {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }
-                    )}
+                <div
+                  className="
+                    bg-[#0F0F14]
+                    border
+                    border-white/5
+                    rounded-3xl
+                    px-5
+                    py-4
+                  "
+                >
 
-                  </span>
+                  <div className="
+                    flex
+                    items-center
+                    gap-3
+                    mb-2
+                  ">
+
+                    <h3 className="
+                      font-bold
+                      text-white
+                    ">
+
+                      {message.user.name}
+
+                    </h3>
+
+                    <span className="
+                      text-xs
+                      text-zinc-500
+                    ">
+
+                      {new Date(
+                        message.createdAt
+                      ).toLocaleTimeString(
+                        "pt-BR",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
+
+                    </span>
+
+                  </div>
+
+                  <p className="
+                    text-zinc-300
+                    leading-relaxed
+                    wrap-break-word
+                  ">
+
+                    {message.content}
+
+                  </p>
 
                 </div>
-
-                <p className="text-zinc-300 leading-relaxed wrap-break-word">
-                  {message.content}
-                </p>
 
               </div>
 
             </div>
 
-          </div>
+          ))}
 
-        ))}
+          <div ref={bottomRef} />
 
-        <div ref={bottomRef} />
+        </div>
 
       </div>
 
