@@ -68,13 +68,6 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/"
-            className="text-zinc-300 hover:text-white transition"
-          >
-            Filmes
-          </Link>
-
-          <Link
             href="/schedule"
             className="text-zinc-300 hover:text-white transition"
           >
@@ -82,7 +75,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/"
+            href="/community"
             className="text-zinc-300 hover:text-white transition"
           >
             Comunidade
