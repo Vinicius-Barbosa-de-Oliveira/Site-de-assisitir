@@ -31,83 +31,387 @@ export default async function CommunityPage() {
 
   return (
 
-    <main className="bg-[#0B0B10] min-h-screen text-white flex flex-col">
+    <main className="relative min-h-screen bg-[#07070A] text-white overflow-hidden">
+
+      {/* BACKGROUND */}
+
+      <div className="
+        absolute
+        inset-0
+        overflow-hidden
+        pointer-events-none
+      ">
+
+        <div className="
+          absolute
+          top-[-200px]
+          left-[-100px]
+          w-[500px]
+          h-[500px]
+          bg-purple-500/20
+          blur-[180px]
+          rounded-full
+        " />
+
+        <div className="
+          absolute
+          bottom-[-250px]
+          right-[-150px]
+          w-[600px]
+          h-[600px]
+          bg-fuchsia-500/10
+          blur-[200px]
+          rounded-full
+        " />
+
+      </div>
 
       <Navbar />
 
-      <section className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+      <section className="
+        relative
+        z-10
+        max-w-7xl
+        mx-auto
+        px-6
+        py-10
+      ">
 
-        <div className="mb-8">
+        {/* HERO */}
 
-          <h1 className="text-5xl font-black">
-            Comunidade
-          </h1>
+        <div className="
+          relative
+          overflow-hidden
+          rounded-[40px]
+          border
+          border-white/10
+          bg-[#111118]/80
+          backdrop-blur-xl
+          p-10
+          mb-8
+        ">
 
-          <p className="text-zinc-400 mt-3 text-lg">
-            Converse em tempo real com outros fãs de doramas.
-          </p>
+          <div className="
+            absolute
+            inset-0
+            bg-gradient-to-br
+            from-purple-500/10
+            via-transparent
+            to-fuchsia-500/5
+          " />
+
+          <div className="relative z-10">
+
+            <div className="
+              inline-flex
+              items-center
+              gap-3
+              bg-purple-500/15
+              border
+              border-purple-500/20
+              text-purple-300
+              px-5
+              py-3
+              rounded-full
+              text-sm
+              font-semibold
+              mb-6
+            ">
+
+              <div className="
+                w-2.5
+                h-2.5
+                rounded-full
+                bg-green-400
+                animate-pulse
+              " />
+
+              Comunidade Global Online
+
+            </div>
+
+            <h1 className="
+              text-6xl
+              md:text-7xl
+              font-black
+              leading-none
+              tracking-tight
+            ">
+
+              Comunidade
+            </h1>
+
+            <p className="
+              text-zinc-400
+              text-lg
+              max-w-3xl
+              mt-6
+              leading-relaxed
+            ">
+
+              Converse em tempo real com outros fãs de doramas,
+              compartilhe teorias, descubra novos lançamentos
+              e participe da comunidade mais apaixonada por
+              dramas asiáticos.
+
+            </p>
+
+            <div className="
+              flex
+              flex-wrap
+              gap-4
+              mt-8
+            ">
+
+              <div className="
+                bg-white/5
+                border
+                border-white/5
+                rounded-2xl
+                px-5
+                py-4
+              ">
+
+                <p className="text-zinc-500 text-sm">
+                  Mensagens
+                </p>
+
+                <h3 className="text-2xl font-black mt-1">
+                  {messages.length}
+                </h3>
+
+              </div>
+
+              <div className="
+                bg-white/5
+                border
+                border-white/5
+                rounded-2xl
+                px-5
+                py-4
+              ">
+
+                <p className="text-zinc-500 text-sm">
+                  Sala Atual
+                </p>
+
+                <h3 className="text-2xl font-black mt-1">
+                  Global
+                </h3>
+
+              </div>
+
+              <div className="
+                bg-white/5
+                border
+                border-white/5
+                rounded-2xl
+                px-5
+                py-4
+              ">
+
+                <p className="text-zinc-500 text-sm">
+                  Status
+                </p>
+
+                <h3 className="
+                  text-2xl
+                  font-black
+                  text-green-400
+                  mt-1
+                ">
+                  Online
+                </h3>
+
+              </div>
+
+            </div>
+
+          </div>
 
         </div>
 
+        {/* CONTENT */}
+
         <div className="
           grid
-          lg:grid-cols-[320px_1fr]
-          gap-6
+          lg:grid-cols-[340px_1fr]
+          gap-8
           h-[78vh]
         ">
 
           {/* SIDEBAR */}
 
           <aside className="
-            bg-[#14141B]
-            border
-            border-white/5
-            rounded-3xl
-            p-6
             hidden
             lg:flex
             flex-col
+            rounded-[36px]
+            border
+            border-white/10
+            bg-[#111118]/80
+            backdrop-blur-xl
+            overflow-hidden
           ">
 
-            <h2 className="text-2xl font-bold mb-6">
-              Salas
-            </h2>
+            {/* HEADER */}
 
-            <div className="space-y-3">
+            <div className="
+              p-7
+              border-b
+              border-white/5
+            ">
+
+              <h2 className="
+                text-3xl
+                font-black
+              ">
+                Salas
+              </h2>
+
+              <p className="
+                text-zinc-500
+                mt-2
+              ">
+                Escolha uma comunidade
+              </p>
+
+            </div>
+
+            {/* ROOM */}
+
+            <div className="
+              p-5
+              space-y-4
+            ">
 
               <button
                 className="
+                  group
+                  relative
                   w-full
-                  bg-purple-500
-                  text-white
-                  rounded-2xl
-                  px-5
-                  py-4
+                  overflow-hidden
+                  rounded-3xl
+                  border
+                  border-purple-500/20
+                  bg-purple-500/15
+                  p-5
                   text-left
-                  font-semibold
+                  transition
+                  hover:scale-[1.02]
                 "
               >
-                🌎 Chat Global
+
+                <div className="
+                  absolute
+                  inset-0
+                  bg-gradient-to-r
+                  from-purple-500/10
+                  to-fuchsia-500/10
+                " />
+
+                <div className="relative z-10">
+
+                  <div className="
+                    flex
+                    items-center
+                    gap-3
+                    mb-3
+                  ">
+
+                    <div className="
+                      w-12
+                      h-12
+                      rounded-2xl
+                      bg-purple-500
+                      flex
+                      items-center
+                      justify-center
+                      text-xl
+                    ">
+                      🌎
+                    </div>
+
+                    <div>
+
+                      <h3 className="
+                        font-bold
+                        text-lg
+                      ">
+                        Chat Global
+                      </h3>
+
+                      <p className="
+                        text-sm
+                        text-purple-200/70
+                      ">
+                        Sala principal
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <div className="
+                    flex
+                    items-center
+                    gap-2
+                    text-sm
+                    text-green-400
+                    font-medium
+                  ">
+
+                    <div className="
+                      w-2
+                      h-2
+                      rounded-full
+                      bg-green-400
+                      animate-pulse
+                    " />
+
+                    Ativo agora
+
+                  </div>
+
+                </div>
+
               </button>
 
             </div>
 
-            <div className="mt-auto pt-8">
+            {/* FOOTER */}
+
+            <div className="
+              mt-auto
+              p-6
+            ">
 
               <div className="
-                bg-[#0F0F14]
-                rounded-2xl
-                p-5
+                rounded-3xl
                 border
                 border-white/5
+                bg-[#0B0B10]
+                p-6
               ">
 
-                <h3 className="font-bold">
-                  Comunidade Online
+                <h3 className="
+                  font-bold
+                  text-lg
+                ">
+                  Sobre a Comunidade
                 </h3>
 
-                <p className="text-zinc-400 mt-2 text-sm leading-relaxed">
-                  Converse sobre episódios, teorias e lançamentos.
+                <p className="
+                  text-zinc-500
+                  mt-3
+                  leading-relaxed
+                  text-sm
+                ">
+
+                  Compartilhe opiniões, descubra novos
+                  doramas e participe das discussões
+                  em tempo real.
+
                 </p>
 
               </div>
@@ -119,13 +423,13 @@ export default async function CommunityPage() {
           {/* CHAT */}
 
           <div className="
-            bg-[#14141B]
+            rounded-[36px]
             border
-            border-white/5
-            rounded-3xl
+            border-white/10
+            bg-[#111118]/80
+            backdrop-blur-xl
             overflow-hidden
-            flex
-            flex-col
+            shadow-[0_0_80px_rgba(168,85,247,0.08)]
           ">
 
             <CommunityChat
