@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+import { io } from "@/lib/socket-server";
+
 export async function sendCommunityMessage(
   formData: FormData
 ) {
@@ -29,15 +31,30 @@ export async function sendCommunityMessage(
   const content =
     formData.get("content") as string;
 
-  if (!content.trim()) {
+  const cleanContent =
+    content.trim();
+
+  if (!cleanContent) {
     return;
   }
 
-  await prisma.communityMessage.create({
-    data: {
-      content,
-      userId: user.id,
-    },
-  });
+  const message =
+    await prisma.communityMessage.create({
+
+      data: {
+        content: cleanContent,
+        userId: user.id,
+      },
+
+      include: {
+        user: true,
+      },
+
+    });
+
+  io.emit(
+    "new-message",
+    message
+  );
 
 }

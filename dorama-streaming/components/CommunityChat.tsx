@@ -7,7 +7,7 @@ import {
   useTransition,
 } from "react";
 
-import { useRouter } from "next/navigation";
+import { socket } from "@/lib/socket";
 
 import {
   sendCommunityMessage,
@@ -21,7 +21,7 @@ import {
 type Message = {
   id: string;
   content: string;
-  createdAt: Date;
+  createdAt: Date | string;
 
   user: {
     name: string | null;
@@ -36,31 +36,63 @@ export default function CommunityChat({
   initialMessages,
 }: Props) {
 
+  // MESSAGES
+
+  const [messages, setMessages] =
+    useState<Message[]>(
+      initialMessages || []
+    );
+
+  // INPUT
+
   const [message, setMessage] =
     useState("");
+
+  // LOADING
 
   const [isPending, startTransition] =
     useTransition();
 
-  const router =
-    useRouter();
+  // SCROLL
 
   const bottomRef =
     useRef<HTMLDivElement>(null);
 
+  // SOCKET CONNECTION
+
   useEffect(() => {
 
-    const interval =
-      setInterval(() => {
+  socket.connect();
 
-        router.refresh();
+  socket.on("new-message", (newMessage) => {
 
-      }, 3000);
+    setMessages((prev) => {
 
-    return () =>
-      clearInterval(interval);
+      const exists = prev.some(
+        (msg) => msg.id === newMessage.id
+      );
 
-  }, [router]);
+      if (exists) {
+        return prev;
+      }
+
+      return [...prev, newMessage];
+
+    });
+
+  });
+
+  return () => {
+
+    socket.off("new-message");
+
+    socket.disconnect();
+
+  };
+
+}, []);
+
+  // AUTO SCROLL
 
   useEffect(() => {
 
@@ -74,7 +106,9 @@ export default function CommunityChat({
 
     }
 
-  }, [initialMessages]);
+  }, [messages]);
+
+  // SEND MESSAGE
 
   async function handleSubmit(
     e: React.FormEvent<HTMLFormElement>
@@ -82,27 +116,31 @@ export default function CommunityChat({
 
     e.preventDefault();
 
-    if (!message.trim()) {
+    const cleanMessage =
+      message.trim();
+
+    if (!cleanMessage) {
       return;
     }
+
+    const currentMessage =
+      message;
 
     const formData =
       new FormData();
 
     formData.append(
       "content",
-      message
+      cleanMessage
     );
+
+    setMessage("");
 
     startTransition(async () => {
 
       await sendCommunityMessage(
         formData
       );
-
-      setMessage("");
-
-      router.refresh();
 
     });
 
@@ -241,7 +279,7 @@ export default function CommunityChat({
           "
         >
 
-          {initialMessages.map((message) => (
+          {messages.map((message) => (
 
             <div
               key={message.id}
@@ -316,6 +354,8 @@ export default function CommunityChat({
                     rounded-[28px]
                     px-6
                     py-5
+                    w-fit
+                    max-w-full
                     transition-all
                     duration-300
                     group-hover:border-purple-500/20
@@ -394,7 +434,7 @@ export default function CommunityChat({
                     <p
                       className="
                         text-zinc-300
-                        leading-8
+                        leading-7
                         whitespace-pre-wrap
                         wrap-break-word
                         text-[15px]
@@ -456,15 +496,27 @@ export default function CommunityChat({
 
             <textarea
               value={message}
-              onChange={(e) =>
-                setMessage(e.target.value)
-              }
+              onChange={(e) => {
+
+                setMessage(e.target.value);
+
+                e.target.style.height = "auto";
+                e.target.style.height =
+                  `${e.target.scrollHeight}px`;
+
+              }}
+
               placeholder="Digite sua mensagem..."
-              rows={2}
+              rows={1}
+
               className="
+                community-scroll
                 relative
                 w-full
+                max-h-40
+                min-h-60px
                 resize-none
+                overflow-y-auto
                 bg-[#18181F]
                 border
                 border-white/5
