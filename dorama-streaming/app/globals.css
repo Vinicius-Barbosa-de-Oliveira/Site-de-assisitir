@@ -43,3 +43,38 @@ body {
 .latest-episodes-swiper .swiper-button-next {
   right: -1.25rem;
 }
+/* SCROLLBAR */
+
+.community-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(168, 85, 247, 0.8) transparent;
+}
+
+/* Chrome / Edge / Opera */
+
+.community-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.community-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.community-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(168, 85, 247, 0.95),
+    rgba(217, 70, 239, 0.95)
+  );
+
+  border-radius: 999px;
+  border: 2px solid #0d0d12;
+}
+
+.community-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(192, 132, 252, 1),
+    rgba(232, 121, 249, 1)
+  );
+}

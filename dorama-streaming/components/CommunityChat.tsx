@@ -220,6 +220,7 @@ export default function CommunityChat({
 
       <div
         className="
+          community-scroll
           flex-1
           overflow-y-auto
           overflow-x-hidden
