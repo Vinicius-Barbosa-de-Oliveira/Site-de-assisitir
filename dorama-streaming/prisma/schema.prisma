@@ -8,7 +8,8 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
+
   name      String
   email     String   @unique
   password  String
@@ -16,17 +17,24 @@ model User {
   image     String?
   createdAt DateTime @default(now())
 
+  // RELAÇÃO DAS MENSAGENS ENVIADAS
+
+  communityMessages CommunityMessage[] @relation("UserMessages")
+
+  // RELAÇÃO DAS MENSAGENS APAGADAS
+
+  deletedMessages CommunityMessage[] @relation("DeletedMessages")
+
   favorites     Favorite[]
   watchProgress WatchProgress[]
   comments      Comment[]
   ratings       Rating[]
-  communityMessages  CommunityMessage[]
 }
 
 model Drama {
-  id          String     @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
-  slug        String     @unique
+  slug        String  @unique
   description String
   coverImage  String
   bannerImage String
@@ -36,10 +44,10 @@ model Drama {
   rating      Float
   status      String
 
-  favorites   Favorite[]
-  genres      Genre[]
-  ratings     Rating[]
-  episodes Episode[]
+  favorites Favorite[]
+  genres    Genre[]
+  ratings   Rating[]
+  episodes  Episode[]
 
   scheduleDay  String?
   scheduleTime String?
@@ -115,31 +123,45 @@ model Comment {
 }
 
 model Rating {
-  id       String @id @default(cuid())
-  value    Int
-  userId   String
-  dramaId  String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  drama    Drama  @relation(fields: [dramaId], references: [id], onDelete: Cascade)
+  id      String @id @default(cuid())
+  value   Int
+  userId  String
+  dramaId String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  drama   Drama  @relation(fields: [dramaId], references: [id], onDelete: Cascade)
 
   @@unique([userId, dramaId])
 }
 
 model Genre {
-  id      String   @id @default(cuid())
-  name    String   @unique
+  id   String @id @default(cuid())
+  name String @unique
 
-  dramas  Drama[]
+  dramas Drama[]
 }
 
 model CommunityMessage {
-  id        String   @id @default(cuid())
-  content   String
+  id String @id @default(cuid())
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  content String
 
   createdAt DateTime @default(now())
+
+  // AUTOR DA MENSAGEM
+
+  userId String
+
+  user User @relation("UserMessages", fields: [userId], references: [id])
+
+  // SOFT DELETE
+
+  deleted Boolean @default(false)
+
+  deletedAt DateTime?
+
+  deletedById String?
+
+  deletedBy User? @relation("DeletedMessages", fields: [deletedById], references: [id])
 }
 
 enum Role {

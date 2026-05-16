@@ -1,28 +1,41 @@
 "use client";
+
 import { useSession } from "next-auth/react";
+
 import {
   useEffect,
   useRef,
   useState,
   useTransition,
 } from "react";
+
 import { socket } from "@/lib/socket";
+
 import {
   sendCommunityMessage,
   deleteCommunityMessage,
 } from "@/app/actions/community-actions";
+
 import {
   Send,
   Sparkles,
   Shield,
   Trash2,
+  MoreVertical,
+  Copy,
+  Forward,
 } from "lucide-react";
-
 
 type Message = {
   id: string;
+
   content: string;
+
   createdAt: Date | string;
+
+  deleted?: boolean;
+
+  deletedAt?: Date | string | null;
 
   user: {
     name: string | null;
@@ -58,6 +71,9 @@ export default function CommunityChat({
   const { data: session } =
     useSession();
 
+  const [openMenuId, setOpenMenuId] =
+    useState<string | null>(null);
+
   // SOCKET
 
   useEffect(() => {
@@ -88,10 +104,37 @@ export default function CommunityChat({
 
     }
 
+    function handleMessageDeleted(
+      data: {
+        id: string;
+      }
+    ) {
+
+      setMessages((prev) =>
+        prev.map((msg) => {
+
+          if (msg.id !== data.id) {
+            return msg;
+          }
+
+          return {
+            ...msg,
+            deleted: true,
+          };
+
+        })
+      );
+
+    }
 
     socket.on(
       "new-message",
       handleNewMessage
+    );
+
+    socket.on(
+      "message-deleted",
+      handleMessageDeleted
     );
 
     return () => {
@@ -100,6 +143,13 @@ export default function CommunityChat({
         "new-message",
         handleNewMessage
       );
+
+      socket.off(
+        "message-deleted",
+        handleMessageDeleted
+      );
+
+      socket.disconnect();
 
     };
 
@@ -172,6 +222,8 @@ export default function CommunityChat({
 
   }
 
+  // DELETE MESSAGE
+
   async function handleDeleteMessage(
     id: string
   ) {
@@ -193,9 +245,18 @@ export default function CommunityChat({
     }
 
     setMessages((prev) =>
-      prev.filter(
-        (msg) => msg.id !== id
-      )
+      prev.map((msg) => {
+
+        if (msg.id !== id) {
+          return msg;
+        }
+
+        return {
+          ...msg,
+          deleted: true,
+        };
+
+      })
     );
 
   }
@@ -415,18 +476,18 @@ export default function CommunityChat({
 
                 {/* MESSAGE */}
 
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
 
                   <div
                     className={`
                       relative
-                      overflow-hidden
+                      overflow-visible
                       border
                       rounded-[28px]
                       px-6
                       py-5
-                      w-fit
-                      max-w-full
+                      w-full
+                      max-w-[900px]
                       transition-all
                       duration-300
 
@@ -449,6 +510,8 @@ export default function CommunityChat({
                     `}
                   >
 
+                    {/* GLOW */}
+
                     <div
                       className="
                         absolute
@@ -462,135 +525,294 @@ export default function CommunityChat({
                       "
                     />
 
-                    <div className="relative z-10">
-                      
-                      {
-                        session?.user?.role ===
-                          "ADMIN" && (
+                    {/* TOP BAR */}
 
-                          <button
-                            onClick={() =>
-                              handleDeleteMessage(
-                                message.id
-                              )
-                            }
-                            className="
-                              absolute
-                              top-4
-                              right-4
-                              opacity-0
-                              group-hover:opacity-100
-                              transition
-                              p-2
-                              rounded-xl
-                              bg-red-500/10
-                              hover:bg-red-500/20
-                              text-red-400
-                            "
-                          >
+                    <div
+                      className="
+                        relative
+                        z-10
+                        flex
+                        items-start
+                        justify-between
+                        gap-4
+                      "
+                    >
 
-                            <Trash2 className="w-4 h-4" />
+                      {/* INFO */}
 
-                          </button>
-
-                      )
-                      }
-
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-3
-                          mb-3
-                          flex-wrap
-                        "
-                      >
-
-                        <h3
-                          className="
-                            font-black
-                            text-white
-                            text-sm
-                            tracking-wide
-                          "
-                        >
-
-                          {message.user.name}
-
-                        </h3>
-
-                        {isAdmin && (
-
-                          <span
-                            className="
-                              flex
-                              items-center
-                              gap-1
-                              px-2
-                              py-1
-                              rounded-full
-                              text-[10px]
-                              font-black
-                              tracking-wider
-                              bg-red-500/20
-                              text-red-300
-                              border
-                              border-red-500/30
-                            "
-                          >
-
-                            <Shield className="w-3 h-3" />
-
-                            ADMIN
-
-                          </span>
-
-                        )}
+                      <div className="flex-1 min-w-0">
 
                         <div
                           className="
-                            w-1
-                            h-1
-                            rounded-full
-                            bg-zinc-600
-                          "
-                        />
-
-                        <span
-                          className="
-                            text-xs
-                            text-zinc-500
-                            font-medium
+                            flex
+                            items-center
+                            gap-3
+                            mb-3
+                            flex-wrap
                           "
                         >
 
-                          {new Date(
-                            message.createdAt
-                          ).toLocaleTimeString(
-                            "pt-BR",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
+                          <h3
+                            className="
+                              font-black
+                              text-white
+                              text-sm
+                              tracking-wide
+                            "
+                          >
+
+                            {message.user.name}
+
+                          </h3>
+
+                          {isAdmin && (
+
+                            <span
+                              className="
+                                flex
+                                items-center
+                                gap-1
+                                px-2
+                                py-1
+                                rounded-full
+                                text-[10px]
+                                font-black
+                                tracking-wider
+                                bg-red-500/20
+                                text-red-300
+                                border
+                                border-red-500/30
+                              "
+                            >
+
+                              <Shield className="w-3 h-3" />
+
+                              ADMIN
+
+                            </span>
+
                           )}
 
-                        </span>
+                          <div
+                            className="
+                              w-1
+                              h-1
+                              rounded-full
+                              bg-zinc-600
+                            "
+                          />
+
+                          <span
+                            className="
+                              text-xs
+                              text-zinc-500
+                              font-medium
+                            "
+                          >
+
+                            {new Date(
+                              message.createdAt
+                            ).toLocaleTimeString(
+                              "pt-BR",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+
+                          </span>
+
+                        </div>
+
+                        {/* CONTENT */}
+
+                        {
+                          message.deleted ? (
+
+                            <div
+                              className="
+                                italic
+                                text-zinc-500
+                                text-sm
+                                border-l-2
+                                border-red-500/30
+                                pl-4
+                              "
+                            >
+
+                              Mensagem removida
+
+                            </div>
+
+                          ) : (
+
+                            <p
+                              className="
+                                break-words
+                                whitespace-pre-wrap
+                                text-zinc-300
+                                leading-7
+                                text-[15px]
+                              "
+                            >
+
+                              {message.content}
+
+                            </p>
+
+                          )
+                        }
 
                       </div>
 
-                      <p
-                        className="
-                          break-words break-all
-                          text-zinc-300
-                          leading-7
-                          whitespace-pre-wrap
-                          text-[15px]
-                        "
-                      >
+                      {/* MENU */}
 
-                        {message.content}
+                      {
+                        !message.deleted && (
 
-                      </p>
+                          <div className="relative shrink-0">
+
+                            <button
+                              onClick={() =>
+                                setOpenMenuId((prev) =>
+                                  prev === message.id
+                                    ? null
+                                    : message.id
+                                )
+                              }
+                              className="
+                                opacity-0
+                                group-hover:opacity-100
+                                transition
+                                p-2
+                                rounded-xl
+                                hover:bg-white/5
+                                text-zinc-400
+                                hover:text-white
+                              "
+                            >
+
+                              <MoreVertical className="w-4 h-4" />
+
+                            </button>
+
+                            {
+                              openMenuId ===
+                                message.id && (
+
+                                <div
+                                  className="
+                                    absolute
+                                    top-12
+                                    right-0
+                                    z-50
+                                    w-52
+                                    rounded-2xl
+                                    border
+                                    border-white/10
+                                    bg-[#18181F]
+                                    backdrop-blur-xl
+                                    shadow-2xl
+                                    overflow-hidden
+                                  "
+                                >
+
+                                  <button
+                                    onClick={() => {
+
+                                      navigator.clipboard.writeText(
+                                        message.content
+                                      );
+
+                                      setOpenMenuId(null);
+
+                                    }}
+                                    className="
+                                      w-full
+                                      flex
+                                      items-center
+                                      gap-3
+                                      px-4
+                                      py-3
+                                      text-sm
+                                      text-zinc-300
+                                      hover:bg-white/5
+                                      transition
+                                    "
+                                  >
+
+                                    <Copy className="w-4 h-4" />
+
+                                    Copiar mensagem
+
+                                  </button>
+
+                                  <button
+                                    className="
+                                      w-full
+                                      flex
+                                      items-center
+                                      gap-3
+                                      px-4
+                                      py-3
+                                      text-sm
+                                      text-zinc-300
+                                      hover:bg-white/5
+                                      transition
+                                    "
+                                  >
+
+                                    <Forward className="w-4 h-4" />
+
+                                    Encaminhar
+
+                                  </button>
+
+                                  {
+                                    session?.user?.role ===
+                                      "ADMIN" && (
+
+                                      <button
+                                        onClick={() => {
+
+                                          handleDeleteMessage(
+                                            message.id
+                                          );
+
+                                          setOpenMenuId(null);
+
+                                        }}
+                                        className="
+                                          w-full
+                                          flex
+                                          items-center
+                                          gap-3
+                                          px-4
+                                          py-3
+                                          text-sm
+                                          text-red-400
+                                          hover:bg-red-500/10
+                                          transition
+                                          border-t
+                                          border-white/5
+                                        "
+                                      >
+
+                                        <Trash2 className="w-4 h-4" />
+
+                                        Apagar mensagem
+
+                                      </button>
+
+                                  )}
+
+                                </div>
+
+                            )}
+
+                          </div>
+
+                      )}
 
                     </div>
 
@@ -670,7 +892,7 @@ export default function CommunityChat({
                 relative
                 w-full
                 max-h-40
-                min-h-[60px]
+                min-h-15
                 resize-none
                 overflow-y-auto
                 bg-[#18181F]

@@ -72,17 +72,33 @@ export async function deleteCommunityMessage(
   const session =
     await getServerSession(authOptions);
 
-  if (
-    !session ||
-    session.user.role !== "ADMIN"
-  ) {
+  if (!session?.user?.email) {
     return false;
   }
+
+  // BUSCA O USUÁRIO
+
+  const user =
+    await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+  if (!user) {
+    return false;
+  }
+
+  // BUSCA A MENSAGEM
 
   const message =
     await prisma.communityMessage.findUnique({
       where: {
         id,
+      },
+
+      include: {
+        user: true,
       },
     });
 
@@ -90,15 +106,49 @@ export async function deleteCommunityMessage(
     return false;
   }
 
-  await prisma.communityMessage.delete({
-    where: {
-      id,
-    },
-  });
+  // PERMISSÕES
+
+  const isAdmin =
+    user.role === "ADMIN";
+
+  const isOwner =
+    message.userId === user.id;
+
+  if (!isAdmin && !isOwner) {
+    return false;
+  }
+
+  // SOFT DELETE
+
+  const deletedMessage =
+    await prisma.communityMessage.update({
+
+      where: {
+        id,
+      },
+
+      data: {
+        deleted: true,
+        deletedAt: new Date(),
+        deletedById: user.id,
+      },
+
+      include: {
+        user: true,
+      },
+
+    });
+
+  // SOCKET
 
   io.emit(
-    "delete-message",
-    id
+    "message-deleted",
+    {
+      id,
+      deleted: true,
+      deletedAt:
+        deletedMessage.deletedAt,
+    }
   );
 
   return true;
