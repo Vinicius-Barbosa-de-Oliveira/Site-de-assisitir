@@ -1,22 +1,23 @@
 "use client";
-
+import { useSession } from "next-auth/react";
 import {
   useEffect,
   useRef,
   useState,
   useTransition,
 } from "react";
-
 import { socket } from "@/lib/socket";
-
 import {
   sendCommunityMessage,
+  deleteCommunityMessage,
 } from "@/app/actions/community-actions";
-
 import {
   Send,
   Sparkles,
+  Shield,
+  Trash2,
 } from "lucide-react";
+
 
 type Message = {
   id: string;
@@ -25,6 +26,7 @@ type Message = {
 
   user: {
     name: string | null;
+    role?: string | null;
   };
 };
 
@@ -36,73 +38,89 @@ export default function CommunityChat({
   initialMessages,
 }: Props) {
 
-  // MESSAGES
-
   const [messages, setMessages] =
     useState<Message[]>(
       initialMessages || []
     );
 
-  // INPUT
-
   const [message, setMessage] =
     useState("");
-
-  // LOADING
 
   const [isPending, startTransition] =
     useTransition();
 
-  // SCROLL
-
   const bottomRef =
     useRef<HTMLDivElement>(null);
 
-  // SOCKET CONNECTION
+  const textareaRef =
+    useRef<HTMLTextAreaElement>(null);
+
+  const { data: session } =
+    useSession();
+
+  // SOCKET
 
   useEffect(() => {
 
-  socket.connect();
+    socket.connect();
 
-  socket.on("new-message", (newMessage) => {
+    function handleNewMessage(
+      newMessage: Message
+    ) {
 
-    setMessages((prev) => {
+      setMessages((prev) => {
 
-      const exists = prev.some(
-        (msg) => msg.id === newMessage.id
+        const exists = prev.some(
+          (msg) =>
+            msg.id === newMessage.id
+        );
+
+        if (exists) {
+          return prev;
+        }
+
+        return [
+          ...prev,
+          newMessage,
+        ];
+
+      });
+
+    }
+
+
+    socket.on(
+      "new-message",
+      handleNewMessage
+    );
+
+    return () => {
+
+      socket.off(
+        "new-message",
+        handleNewMessage
       );
 
-      if (exists) {
-        return prev;
-      }
+    };
 
-      return [...prev, newMessage];
-
-    });
-
-  });
-
-  return () => {
-
-    socket.off("new-message");
-
-    socket.disconnect();
-
-  };
-
-}, []);
+  }, []);
 
   // AUTO SCROLL
 
   useEffect(() => {
 
     const container =
-      bottomRef.current?.parentElement?.parentElement;
+      bottomRef.current
+        ?.parentElement
+        ?.parentElement;
 
     if (container) {
 
-      container.scrollTop =
-        container.scrollHeight;
+      container.scrollTo({
+        top:
+          container.scrollHeight,
+        behavior: "smooth",
+      });
 
     }
 
@@ -123,9 +141,6 @@ export default function CommunityChat({
       return;
     }
 
-    const currentMessage =
-      message;
-
     const formData =
       new FormData();
 
@@ -136,6 +151,17 @@ export default function CommunityChat({
 
     setMessage("");
 
+    requestAnimationFrame(() => {
+
+      if (textareaRef.current) {
+
+        textareaRef.current.style.height =
+          "auto";
+
+      }
+
+    });
+
     startTransition(async () => {
 
       await sendCommunityMessage(
@@ -143,6 +169,34 @@ export default function CommunityChat({
       );
 
     });
+
+  }
+
+  async function handleDeleteMessage(
+    id: string
+  ) {
+
+    const confirmed =
+      confirm(
+        "Deseja realmente apagar esta mensagem?"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const deleted =
+      await deleteCommunityMessage(id);
+
+    if (!deleted) {
+      return;
+    }
+
+    setMessages((prev) =>
+      prev.filter(
+        (msg) => msg.id !== id
+      )
+    );
 
   }
 
@@ -179,41 +233,37 @@ export default function CommunityChat({
 
         <div className="relative z-10 flex items-center justify-between">
 
-          <div>
+          <div className="flex items-center gap-3">
 
-            <div className="flex items-center gap-3">
+            <div
+              className="
+                w-12
+                h-12
+                rounded-2xl
+                bg-linear-to-br
+                from-purple-500
+                to-fuchsia-500
+                flex
+                items-center
+                justify-center
+                shadow-lg
+                shadow-purple-500/20
+              "
+            >
 
-              <div
-                className="
-                  w-12
-                  h-12
-                  rounded-2xl
-                  bg-linear-to-br
-                  from-purple-500
-                  to-fuchsia-500
-                  flex
-                  items-center
-                  justify-center
-                  shadow-lg
-                  shadow-purple-500/20
-                "
-              >
+              <Sparkles className="w-6 h-6" />
 
-                <Sparkles className="w-6 h-6" />
+            </div>
 
-              </div>
+            <div>
 
-              <div>
+              <h2 className="text-2xl font-black">
+                Chat Global
+              </h2>
 
-                <h2 className="text-2xl font-black">
-                  Chat Global
-                </h2>
-
-                <p className="text-zinc-400 text-sm mt-1">
-                  Converse com outros fãs em tempo real
-                </p>
-
-              </div>
+              <p className="text-zinc-400 text-sm mt-1">
+                Converse com outros fãs em tempo real
+              </p>
 
             </div>
 
@@ -279,171 +329,270 @@ export default function CommunityChat({
           "
         >
 
-          {messages.map((message) => (
+          {messages.map((message) => {
 
-            <div
-              key={message.id}
-              className="
-                group
-                flex
-                gap-4
-                items-start
-              "
-            >
+            const isAdmin =
+              message.user.role ===
+              "ADMIN";
 
-              {/* AVATAR */}
+            return (
 
               <div
+                key={message.id}
                 className="
-                  relative
-                  shrink-0
+                  group
+                  flex
+                  gap-4
+                  items-start
                 "
               >
 
-                <div
-                  className="
-                    absolute
-                    inset-0
-                    rounded-2xl
-                    bg-purple-500/40
-                    blur-xl
-                    opacity-0
-                    group-hover:opacity-100
-                    transition
-                  "
-                />
+                {/* AVATAR */}
 
                 <div
                   className="
                     relative
-                    w-13
-                    h-13
-                    rounded-2xl
-                    bg-linear-to-br
-                    from-purple-500
-                    to-fuchsia-500
-                    flex
-                    items-center
-                    justify-center
-                    font-black
-                    text-lg
-                    shadow-lg
-                    shadow-purple-500/20
-                  "
-                >
-
-                  {message.user.name
-                    ?.charAt(0)
-                    ?.toUpperCase() || "U"}
-
-                </div>
-
-              </div>
-
-              {/* MESSAGE */}
-
-              <div className="flex-1">
-
-                <div
-                  className="
-                    relative
-                    overflow-hidden
-                    bg-[#15151D]
-                    border
-                    border-white/5
-                    rounded-[28px]
-                    px-6
-                    py-5
-                    w-fit
-                    max-w-full
-                    transition-all
-                    duration-300
-                    group-hover:border-purple-500/20
-                    group-hover:bg-[#181822]
+                    shrink-0
                   "
                 >
 
                   <div
-                    className="
+                    className={`
                       absolute
-                      top-0
-                      right-0
-                      w-40
-                      h-40
-                      bg-purple-500/5
-                      blur-3xl
-                      rounded-full
-                    "
+                      inset-0
+                      rounded-2xl
+                      blur-xl
+                      opacity-0
+                      group-hover:opacity-100
+                      transition
+
+                      ${
+                        isAdmin
+                          ? "bg-red-500/40"
+                          : "bg-purple-500/40"
+                      }
+                    `}
                   />
 
-                  <div className="relative z-10">
+                  <div
+                    className={`
+                      relative
+                      w-13
+                      h-13
+                      rounded-2xl
+                      flex
+                      items-center
+                      justify-center
+                      font-black
+                      text-lg
+                      shadow-lg
+
+                      ${
+                        isAdmin
+                          ? `
+                            bg-linear-to-br
+                            from-red-500
+                            to-orange-500
+                            shadow-red-500/20
+                          `
+                          : `
+                            bg-linear-to-br
+                            from-purple-500
+                            to-fuchsia-500
+                            shadow-purple-500/20
+                          `
+                      }
+                    `}
+                  >
+
+                    {message.user.name
+                      ?.charAt(0)
+                      ?.toUpperCase() || "U"}
+
+                  </div>
+
+                </div>
+
+                {/* MESSAGE */}
+
+                <div className="flex-1">
+
+                  <div
+                    className={`
+                      relative
+                      overflow-hidden
+                      border
+                      rounded-[28px]
+                      px-6
+                      py-5
+                      w-fit
+                      max-w-full
+                      transition-all
+                      duration-300
+
+                      ${
+                        isAdmin
+                          ? `
+                            bg-linear-to-br
+                            from-[#24122E]
+                            to-[#1A1327]
+                            border-red-500/20
+                            group-hover:border-red-500/40
+                          `
+                          : `
+                            bg-[#15151D]
+                            border-white/5
+                            group-hover:border-purple-500/20
+                            group-hover:bg-[#181822]
+                          `
+                      }
+                    `}
+                  >
 
                     <div
                       className="
-                        flex
-                        items-center
-                        gap-3
-                        mb-3
+                        absolute
+                        top-0
+                        right-0
+                        w-40
+                        h-40
+                        bg-purple-500/5
+                        blur-3xl
+                        rounded-full
                       "
-                    >
+                    />
 
-                      <h3
-                        className="
-                          font-black
-                          text-white
-                          text-sm
-                          tracking-wide
-                        "
-                      >
+                    <div className="relative z-10">
+                      
+                      {
+                        session?.user?.role ===
+                          "ADMIN" && (
 
-                        {message.user.name}
+                          <button
+                            onClick={() =>
+                              handleDeleteMessage(
+                                message.id
+                              )
+                            }
+                            className="
+                              absolute
+                              top-4
+                              right-4
+                              opacity-0
+                              group-hover:opacity-100
+                              transition
+                              p-2
+                              rounded-xl
+                              bg-red-500/10
+                              hover:bg-red-500/20
+                              text-red-400
+                            "
+                          >
 
-                      </h3>
+                            <Trash2 className="w-4 h-4" />
+
+                          </button>
+
+                      )
+                      }
 
                       <div
                         className="
-                          w-1
-                          h-1
-                          rounded-full
-                          bg-zinc-600
-                        "
-                      />
-
-                      <span
-                        className="
-                          text-xs
-                          text-zinc-500
-                          font-medium
+                          flex
+                          items-center
+                          gap-3
+                          mb-3
+                          flex-wrap
                         "
                       >
 
-                        {new Date(
-                          message.createdAt
-                        ).toLocaleTimeString(
-                          "pt-BR",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }
+                        <h3
+                          className="
+                            font-black
+                            text-white
+                            text-sm
+                            tracking-wide
+                          "
+                        >
+
+                          {message.user.name}
+
+                        </h3>
+
+                        {isAdmin && (
+
+                          <span
+                            className="
+                              flex
+                              items-center
+                              gap-1
+                              px-2
+                              py-1
+                              rounded-full
+                              text-[10px]
+                              font-black
+                              tracking-wider
+                              bg-red-500/20
+                              text-red-300
+                              border
+                              border-red-500/30
+                            "
+                          >
+
+                            <Shield className="w-3 h-3" />
+
+                            ADMIN
+
+                          </span>
+
                         )}
 
-                      </span>
+                        <div
+                          className="
+                            w-1
+                            h-1
+                            rounded-full
+                            bg-zinc-600
+                          "
+                        />
+
+                        <span
+                          className="
+                            text-xs
+                            text-zinc-500
+                            font-medium
+                          "
+                        >
+
+                          {new Date(
+                            message.createdAt
+                          ).toLocaleTimeString(
+                            "pt-BR",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+
+                        </span>
+
+                      </div>
+
+                      <p
+                        className="
+                          break-words break-all
+                          text-zinc-300
+                          leading-7
+                          whitespace-pre-wrap
+                          text-[15px]
+                        "
+                      >
+
+                        {message.content}
+
+                      </p>
 
                     </div>
-
-                    <p
-                      className="
-                        text-zinc-300
-                        leading-7
-                        whitespace-pre-wrap
-                        wrap-break-word
-                        text-[15px]
-                      "
-                    >
-
-                      {message.content}
-
-                    </p>
 
                   </div>
 
@@ -451,9 +600,9 @@ export default function CommunityChat({
 
               </div>
 
-            </div>
+            );
 
-          ))}
+          })}
 
           <div ref={bottomRef} />
 
@@ -495,12 +644,19 @@ export default function CommunityChat({
             />
 
             <textarea
+              ref={textareaRef}
+
               value={message}
+
               onChange={(e) => {
 
-                setMessage(e.target.value);
+                setMessage(
+                  e.target.value
+                );
 
-                e.target.style.height = "auto";
+                e.target.style.height =
+                  "auto";
+
                 e.target.style.height =
                   `${e.target.scrollHeight}px`;
 
@@ -514,7 +670,7 @@ export default function CommunityChat({
                 relative
                 w-full
                 max-h-40
-                min-h-60px
+                min-h-[60px]
                 resize-none
                 overflow-y-auto
                 bg-[#18181F]
