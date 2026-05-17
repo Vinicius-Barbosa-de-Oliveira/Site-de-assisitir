@@ -1,33 +1,14 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-import { prisma } from "@/lib/prisma";
+import CommunityChat from "@/components/Community/CommunityChat";
 
-import CommunityChat from "@/components/CommunityChat";
-
-import {
-  CommunityMessage,
-  User,
-} from "@prisma/client";
+import { getCommunityMessages } from "@/app/services/community";
 
 export default async function CommunityPage() {
 
-  const messages: (CommunityMessage & {
-    user: User;
-  })[] =
-    await prisma.communityMessage.findMany({
-
-      include: {
-        user: true,
-      },
-
-      orderBy: {
-        createdAt: "asc",
-      },
-
-      take: 100,
-
-    });
+  const messages =
+    await getCommunityMessages();
 
   return (
 
@@ -35,119 +16,138 @@ export default async function CommunityPage() {
 
       {/* BACKGROUND */}
 
-      <div className="
-        absolute
-        inset-0
-        overflow-hidden
-        pointer-events-none
-      ">
-
-        <div className="
+      <div
+        className="
           absolute
-          -top-50
-          -left-25
-          w-125
-          h-125
-          bg-purple-500/20
-          blur-[180px]
-          rounded-full
-        " />
+          inset-0
+          overflow-hidden
+          pointer-events-none
+        "
+      >
 
-        <div className="
-          absolute
-          -bottom-62.5
-          -right-37.5
-          w-150
-          h-150
-          bg-fuchsia-500/10
-          blur-[200px]
-          rounded-full
-        " />
+        <div
+          className="
+            absolute
+            -top-50
+            -left-25
+            w-125
+            h-125
+            bg-purple-500/20
+            blur-[180px]
+            rounded-full
+          "
+        />
+
+        <div
+          className="
+            absolute
+            -bottom-62.5
+            -right-37.5
+            w-150
+            h-150
+            bg-fuchsia-500/10
+            blur-[200px]
+            rounded-full
+          "
+        />
 
       </div>
 
       <Navbar />
 
-      <section className="
-        relative
-        z-10
-        max-w-7xl
-        mx-auto
-        px-6
-        py-10
-      ">
+      <section
+        className="
+          relative
+          z-10
+          max-w-7xl
+          mx-auto
+          px-6
+          py-10
+        "
+      >
 
         {/* HERO */}
 
-        <div className="
-          relative
-          overflow-hidden
-          rounded-[40px]
-          border
-          border-white/10
-          bg-[#111118]/80
-          backdrop-blur-xl
-          p-10
-          mb-8
-        ">
+        <div
+          className="
+            relative
+            overflow-hidden
+            rounded-[40px]
+            border
+            border-white/10
+            bg-[#111118]/80
+            backdrop-blur-xl
+            p-10
+            mb-8
+          "
+        >
 
-          <div className="
-            absolute
-            inset-0
-            bg-linear-to-br
-            from-purple-500/10
-            via-transparent
-            to-fuchsia-500/5
-          " />
+          <div
+            className="
+              absolute
+              inset-0
+              bg-linear-to-br
+              from-purple-500/10
+              via-transparent
+              to-fuchsia-500/5
+            "
+          />
 
           <div className="relative z-10">
 
-            <div className="
-              inline-flex
-              items-center
-              gap-3
-              bg-purple-500/15
-              border
-              border-purple-500/20
-              text-purple-300
-              px-5
-              py-3
-              rounded-full
-              text-sm
-              font-semibold
-              mb-6
-            ">
-
-              <div className="
-                w-2.5
-                h-2.5
+            <div
+              className="
+                inline-flex
+                items-center
+                gap-3
+                bg-purple-500/15
+                border
+                border-purple-500/20
+                text-purple-300
+                px-5
+                py-3
                 rounded-full
-                bg-green-400
-                animate-pulse
-              " />
+                text-sm
+                font-semibold
+                mb-6
+              "
+            >
+
+              <div
+                className="
+                  w-2.5
+                  h-2.5
+                  rounded-full
+                  bg-green-400
+                  animate-pulse
+                "
+              />
 
               Comunidade Global Online
 
             </div>
 
-            <h1 className="
-              text-6xl
-              md:text-7xl
-              font-black
-              leading-none
-              tracking-tight
-            ">
-
+            <h1
+              className="
+                text-6xl
+                md:text-7xl
+                font-black
+                leading-none
+                tracking-tight
+              "
+            >
               Comunidade
             </h1>
 
-            <p className="
-              text-zinc-400
-              text-lg
-              max-w-3xl
-              mt-6
-              leading-relaxed
-            ">
+            <p
+              className="
+                text-zinc-400
+                text-lg
+                max-w-3xl
+                mt-6
+                leading-relaxed
+              "
+            >
 
               Converse em tempo real com outros fãs de doramas,
               compartilhe teorias, descubra novos lançamentos
@@ -156,21 +156,25 @@ export default async function CommunityPage() {
 
             </p>
 
-            <div className="
-              flex
-              flex-wrap
-              gap-4
-              mt-8
-            ">
+            <div
+              className="
+                flex
+                flex-wrap
+                gap-4
+                mt-8
+              "
+            >
 
-              <div className="
-                bg-white/5
-                border
-                border-white/5
-                rounded-2xl
-                px-5
-                py-4
-              ">
+              <div
+                className="
+                  bg-white/5
+                  border
+                  border-white/5
+                  rounded-2xl
+                  px-5
+                  py-4
+                "
+              >
 
                 <p className="text-zinc-500 text-sm">
                   Mensagens
@@ -182,14 +186,16 @@ export default async function CommunityPage() {
 
               </div>
 
-              <div className="
-                bg-white/5
-                border
-                border-white/5
-                rounded-2xl
-                px-5
-                py-4
-              ">
+              <div
+                className="
+                  bg-white/5
+                  border
+                  border-white/5
+                  rounded-2xl
+                  px-5
+                  py-4
+                "
+              >
 
                 <p className="text-zinc-500 text-sm">
                   Sala Atual
@@ -201,25 +207,29 @@ export default async function CommunityPage() {
 
               </div>
 
-              <div className="
-                bg-white/5
-                border
-                border-white/5
-                rounded-2xl
-                px-5
-                py-4
-              ">
+              <div
+                className="
+                  bg-white/5
+                  border
+                  border-white/5
+                  rounded-2xl
+                  px-5
+                  py-4
+                "
+              >
 
                 <p className="text-zinc-500 text-sm">
                   Status
                 </p>
 
-                <h3 className="
-                  text-2xl
-                  font-black
-                  text-green-400
-                  mt-1
-                ">
+                <h3
+                  className="
+                    text-2xl
+                    font-black
+                    text-green-400
+                    mt-1
+                  "
+                >
                   Online
                 </h3>
 
@@ -233,46 +243,56 @@ export default async function CommunityPage() {
 
         {/* CONTENT */}
 
-        <div className="
-          grid
-          lg:grid-cols-[340px_1fr]
-          gap-8
-          h-[78vh]
-        ">
+        <div
+          className="
+            grid
+            lg:grid-cols-[340px_1fr]
+            gap-8
+            h-[78vh]
+          "
+        >
 
           {/* SIDEBAR */}
 
-          <aside className="
-            hidden
-            lg:flex
-            flex-col
-            rounded-[36px]
-            border
-            border-white/10
-            bg-[#111118]/80
-            backdrop-blur-xl
-            overflow-hidden
-          ">
+          <aside
+            className="
+              hidden
+              lg:flex
+              flex-col
+              rounded-[36px]
+              border
+              border-white/10
+              bg-[#111118]/80
+              backdrop-blur-xl
+              overflow-hidden
+            "
+          >
 
             {/* HEADER */}
 
-            <div className="
-              p-7
-              border-b
-              border-white/5
-            ">
+            <div
+              className="
+                p-7
+                border-b
+                border-white/5
+              "
+            >
 
-              <h2 className="
-                text-3xl
-                font-black
-              ">
+              <h2
+                className="
+                  text-3xl
+                  font-black
+                "
+              >
                 Salas
               </h2>
 
-              <p className="
-                text-zinc-500
-                mt-2
-              ">
+              <p
+                className="
+                  text-zinc-500
+                  mt-2
+                "
+              >
                 Escolha uma comunidade
               </p>
 
@@ -280,10 +300,12 @@ export default async function CommunityPage() {
 
             {/* ROOM */}
 
-            <div className="
-              p-5
-              space-y-4
-            ">
+            <div
+              className="
+                p-5
+                space-y-4
+              "
+            >
 
               <button
                 className="
@@ -302,49 +324,59 @@ export default async function CommunityPage() {
                 "
               >
 
-                <div className="
-                  absolute
-                  inset-0
-                  bg-linear-to-r
-                  from-purple-500/10
-                  to-fuchsia-500/10
-                " />
+                <div
+                  className="
+                    absolute
+                    inset-0
+                    bg-linear-to-r
+                    from-purple-500/10
+                    to-fuchsia-500/10
+                  "
+                />
 
                 <div className="relative z-10">
 
-                  <div className="
-                    flex
-                    items-center
-                    gap-3
-                    mb-3
-                  ">
-
-                    <div className="
-                      w-12
-                      h-12
-                      rounded-2xl
-                      bg-purple-500
+                  <div
+                    className="
                       flex
                       items-center
-                      justify-center
-                      text-xl
-                    ">
+                      gap-3
+                      mb-3
+                    "
+                  >
+
+                    <div
+                      className="
+                        w-12
+                        h-12
+                        rounded-2xl
+                        bg-purple-500
+                        flex
+                        items-center
+                        justify-center
+                        text-xl
+                      "
+                    >
                       🌎
                     </div>
 
                     <div>
 
-                      <h3 className="
-                        font-bold
-                        text-lg
-                      ">
+                      <h3
+                        className="
+                          font-bold
+                          text-lg
+                        "
+                      >
                         Chat Global
                       </h3>
 
-                      <p className="
-                        text-sm
-                        text-purple-200/70
-                      ">
+                      <p
+                        className="
+                          text-sm
+                          text-purple-200/70
+                        "
+                      >
                         Sala principal
                       </p>
 
@@ -352,22 +384,26 @@ export default async function CommunityPage() {
 
                   </div>
 
-                  <div className="
-                    flex
-                    items-center
-                    gap-2
-                    text-sm
-                    text-green-400
-                    font-medium
-                  ">
+                  <div
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      text-sm
+                      text-green-400
+                      font-medium
+                    "
+                  >
 
-                    <div className="
-                      w-2
-                      h-2
-                      rounded-full
-                      bg-green-400
-                      animate-pulse
-                    " />
+                    <div
+                      className="
+                        w-2
+                        h-2
+                        rounded-full
+                        bg-green-400
+                        animate-pulse
+                      "
+                    />
 
                     Ativo agora
 
@@ -381,32 +417,40 @@ export default async function CommunityPage() {
 
             {/* FOOTER */}
 
-            <div className="
-              mt-auto
-              p-6
-            ">
-
-              <div className="
-                rounded-3xl
-                border
-                border-white/5
-                bg-[#0B0B10]
+            <div
+              className="
+                mt-auto
                 p-6
-              ">
+              "
+            >
 
-                <h3 className="
-                  font-bold
-                  text-lg
-                ">
+              <div
+                className="
+                  rounded-3xl
+                  border
+                  border-white/5
+                  bg-[#0B0B10]
+                  p-6
+                "
+              >
+
+                <h3
+                  className="
+                    font-bold
+                    text-lg
+                  "
+                >
                   Sobre a Comunidade
                 </h3>
 
-                <p className="
-                  text-zinc-500
-                  mt-3
-                  leading-relaxed
-                  text-sm
-                ">
+                <p
+                  className="
+                    text-zinc-500
+                    mt-3
+                    leading-relaxed
+                    text-sm
+                  "
+                >
 
                   Compartilhe opiniões, descubra novos
                   doramas e participe das discussões
@@ -422,15 +466,17 @@ export default async function CommunityPage() {
 
           {/* CHAT */}
 
-          <div className="
-            rounded-[36px]
-            border
-            border-white/10
-            bg-[#111118]/80
-            backdrop-blur-xl
-            overflow-hidden
-            shadow-[0_0_80px_rgba(168,85,247,0.08)]
-          ">
+          <div
+            className="
+              rounded-[36px]
+              border
+              border-white/10
+              bg-[#111118]/80
+              backdrop-blur-xl
+              overflow-hidden
+              shadow-[0_0_80px_rgba(168,85,247,0.08)]
+            "
+          >
 
             <CommunityChat
               initialMessages={messages}

@@ -1,90 +1,206 @@
-"use client";
-
 import Link from "next/link";
+
 import Image from "next/image";
 
 interface Props {
-  dramas: any[];
+  items: any[];
 }
 
-export default function ContinueWatching({
-  dramas,
+export default function
+ContinueWatchingSection({
+  items,
 }: Props) {
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-16">
 
-      <div className="mb-10">
+    <section className="py-14">
 
-        <h2 className="text-4xl font-black">
-          Continue Assistindo
-        </h2>
+      <div
+        className="
+          max-w-7xl
+          mx-auto
+          px-6
+        "
+      >
 
-        <p className="text-zinc-400 mt-2">
-          Retome de onde parou
-        </p>
+        <div className="mb-8">
 
-      </div>
-
-      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-8">
-
-        {dramas.slice(0, 4).map((drama) => (
-
-          <Link
-            key={drama.id}
-            href={`/watch/${drama.slug}/1`}
-            className="group"
+          <h2
+            className="
+              text-3xl
+              font-black
+              mb-2
+            "
           >
+            Continue Assistindo
+          </h2>
 
-            <div className="bg-[#18181F] rounded-3xl overflow-hidden border border-white/5 hover:border-purple-500/40 transition h-full flex flex-col">
+          <p className="text-white/60">
+            Retome de onde parou
+          </p>
 
-              <div className="relative aspect-16/10">
+        </div>
 
-                <Image
-                  src={drama.image}
-                  alt={drama.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                  className="object-cover"
-                />
+        <div
+          className="
+            grid
+            sm:grid-cols-2
+            lg:grid-cols-4
+            gap-6
+          "
+        >
 
-              </div>
+          {items.map((item) => {
 
-              <div className="p-5 flex flex-col flex-1">
+            const progress =
+              (
+                item.currentTime /
+                item.episode.duration
+              ) * 100;
 
-                <h3 className="text-2xl font-bold line-clamp-2 min-h-16">
-                  {drama.title}
-                </h3>
+            return (
 
-                <div className="mt-auto">
+              <Link
+                key={item.id}
+                href={`/watch/${item.episode.drama.slug}/${item.episode.number}`}
+                className="group"
+              >
 
-                  <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden mt-6">
+                <div
+                  className="
+                    bg-[#18181F]
+                    border
+                    border-white/5
+                    hover:border-purple-500/30
+                    rounded-3xl
+                    overflow-hidden
+                    transition
+                  "
+                >
 
-                    <div
-                      className="h-full bg-purple-500 rounded-full"
-                      style={{
-                        width: "45%",
-                      }}
+                  <div
+                    className="
+                      relative
+                      h-64
+                      overflow-hidden
+                    "
+                  >
+
+                    <Image
+                      src={
+                        item.episode
+                          .thumbnail
+                      }
+                      alt={
+                        item.episode
+                          .title
+                      }
+                      fill
+                      className="
+                        object-cover
+                        group-hover:scale-105
+                        transition
+                        duration-500
+                      "
                     />
 
                   </div>
 
-                  <p className="text-zinc-400 text-sm mt-3">
-                    45% assistido
-                  </p>
+                  <div className="p-5">
+
+                    <h3
+                      className="
+                        text-2xl
+                        font-bold
+                        line-clamp-1
+                      "
+                    >
+
+                      {
+                        item.episode
+                          .drama.title
+                      }
+
+                    </h3>
+
+                    <p
+                      className="
+                        text-white/50
+                        text-sm
+                        mt-1
+                      "
+                    >
+
+                      Episódio
+                      {" "}
+                      {
+                        item.episode
+                          .number
+                      }
+
+                    </p>
+
+                    <div className="mt-4">
+
+                      <div
+                        className="
+                          w-full
+                          h-2
+                          rounded-full
+                          bg-white/10
+                          overflow-hidden
+                        "
+                      >
+
+                        <div
+                          className="
+                            h-full
+                            bg-purple-500
+                            rounded-full
+                          "
+                          style={{
+                            width:
+                              `${progress}%`,
+                          }}
+                        />
+
+                      </div>
+
+                      <p
+                        className="
+                          text-xs
+                          text-white/40
+                          mt-2
+                        "
+                      >
+
+                        {
+                          Math.floor(
+                            progress
+                          )
+                        }
+                        % assistido
+
+                      </p>
+
+                    </div>
+
+                  </div>
 
                 </div>
 
-              </div>
+              </Link>
 
-            </div>
+            );
 
-          </Link>
+          })}
 
-        ))}
+        </div>
 
       </div>
 
     </section>
+
   );
+
 }
