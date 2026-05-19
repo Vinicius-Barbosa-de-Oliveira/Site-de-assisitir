@@ -1,10 +1,11 @@
 "use client";
 
 import {
-  useEffect,
   useMemo,
   useState,
 } from "react";
+
+import {Dramax, Genrex,} from "@/types/drama";
 
 import { useSearchParams }
 from "next/navigation";
@@ -16,9 +17,23 @@ interface Genre {
   id: string;
   name: string;
 }
+interface Drama {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  rating: number;
+
+  coverImage: string;
+  year?: number;
+  country?: string;
+  status?: string;
+
+  genres: Genre[];
+}
 
 interface Props {
-  dramas: any[];
+  dramas: Drama[];
   genres: Genre[];
 }
 
@@ -36,30 +51,15 @@ export default function CategoriesClient({
   const genreFromUrl =
     searchParams.get("genre");
 
-  const [
-    selectedCategory,
-    setSelectedCategory,
-  ] = useState("Todos");
+  const [selectedCategory, setSelectedCategory] =
+  useState(
+    genreFromUrl || "Todos"
+  );
 
-  const [search, setSearch] =
-    useState("");
-
-  useEffect(() => {
-
-    if (genreFromUrl) {
-      setSelectedCategory(
-        genreFromUrl
-      );
-    }
-
-    if (searchFromUrl) {
-      setSearch(searchFromUrl);
-    }
-
-  }, [
-    genreFromUrl,
-    searchFromUrl,
-  ]);
+const [search, setSearch] =
+  useState(
+    searchFromUrl || ""
+  );
 
   const filteredDramas =
     useMemo(() => {

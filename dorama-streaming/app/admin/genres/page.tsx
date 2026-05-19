@@ -5,8 +5,7 @@ import {
   createGenre,
   deleteGenre,
 } from "./actions";
-
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export default async function GenresPage() {
 

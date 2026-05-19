@@ -45,8 +45,7 @@ export default function CommunityChat({
   const bottomRef =
     useRef<HTMLDivElement>(null);
 
-  const { data: session } =
-    useSession();
+  useSession();
 
   // SOCKET
 

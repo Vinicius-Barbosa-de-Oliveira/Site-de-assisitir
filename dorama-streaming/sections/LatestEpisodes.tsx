@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
+import { Drama } from "@prisma/client";
 
 interface Props {
-  dramas: any[];
+  dramas: Drama[];
 }
 
-const latestEpisodes = await prisma.episode.findMany({
+const latestEpisodes = await db.query.episode.findMany({
   take: 8,
   orderBy: {
     createdAt: "desc",
@@ -45,7 +46,7 @@ export default function LatestEpisodes({
 
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
 
-        {dramas.map((episode: any) => (
+        {dramas.map((episode: Drama) => (
 
           <Link
             key={episode.id}

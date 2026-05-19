@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export default async function AdminDashboardPage() {
 

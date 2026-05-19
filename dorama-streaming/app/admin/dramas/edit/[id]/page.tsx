@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { getGenres } from "@/lib/data";
 
 import { Genre } from "@prisma/client";

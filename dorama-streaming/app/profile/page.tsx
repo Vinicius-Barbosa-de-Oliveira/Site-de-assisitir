@@ -10,7 +10,7 @@ import Footer from "@/components/Footer";
 
 import { Heart, Clock, Play } from "lucide-react";
 
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 import Image from "next/image";
 

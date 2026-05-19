@@ -13,7 +13,7 @@ import { getDramaBySlug, getAllDramas } from "@/lib/data";
 import FavoriteButton from "@/components/FavoriteButton";
 
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 
 

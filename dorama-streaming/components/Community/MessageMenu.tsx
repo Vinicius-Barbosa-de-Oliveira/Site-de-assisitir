@@ -56,7 +56,7 @@ export default function MessageMenu({
             absolute
             top-12
             right-0
-            z-[999]
+            z-999
             w-52
             rounded-2xl
             border

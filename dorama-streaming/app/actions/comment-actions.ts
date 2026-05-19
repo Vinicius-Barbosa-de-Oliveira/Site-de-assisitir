@@ -1,9 +1,21 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { db }
+from "@/lib/db";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import {
+  users,
+  comment,
+} from "@/db/schema";
+
+import { eq }
+from "drizzle-orm";
+
+import { getServerSession }
+from "next-auth";
+
+import { authOptions }
+from "@/lib/auth";
 
 export async function createComment(
   episodeId: string,
@@ -11,43 +23,56 @@ export async function createComment(
 ) {
 
   const session =
-    await getServerSession(authOptions);
+    await getServerSession(
+      authOptions
+    );
 
   if (!session?.user?.email) {
-    throw new Error("Não autenticado");
+
+    throw new Error(
+      "Não autenticado"
+    );
+
   }
 
-  const user =
-    await prisma.user.findUnique({
+  const foundUser =
+    await db.query.user.findFirst({
 
-      where: {
-        email: session.user.email,
-      },
+      where: (
+        table,
+        { eq }
+      ) =>
+        eq(
+          table.email,
+          session.user.email
+        ),
 
     });
 
-  if (!user) {
-    throw new Error("Usuário não encontrado");
+  if (!foundUser) {
+
+    throw new Error(
+      "Usuário não encontrado"
+    );
+
   }
 
   const content =
-    formData.get("content") as string;
+    formData.get(
+      "content"
+    ) as string;
 
-  if (!content.trim()) {
+  if (!content?.trim()) {
     return;
   }
 
-  await prisma.comment.create({
+  await db.insert(comment).values({
 
-    data: {
+    content,
 
-      content,
+    userId: foundUser.id,
 
-      userId: user.id,
-
-      episodeId,
-
-    },
+    episodeId,
 
   });
 
