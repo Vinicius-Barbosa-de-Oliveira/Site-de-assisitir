@@ -1,0 +1,1 @@
+ALTER TABLE "continue_watching" ADD COLUMN "completed" boolean DEFAULT false NOT NULL;

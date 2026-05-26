@@ -7,8 +7,8 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 
-import { episodes } from "./episodes";
-import { languages } from "../system/languages";
+import { episode } from "./episodes";
+import { language } from "../system/languages";
 
 export const streamQualityEnum = pgEnum("stream_quality", [
   "360p",
@@ -26,12 +26,12 @@ export const streamTypeEnum = pgEnum("stream_type", [
   "Other",
 ]);
 
-export const episodestreams = pgTable("episode_streams", {
+export const stream = pgTable("streams", {
   id: uuid("id").primaryKey().defaultRandom(),
 
-  episode_Id: uuid("episode_id").references(() => episodes.id, {onDelete: "cascade",}).notNull(),
+  episodeId: uuid("episode_id").references(() => episode.id, {onDelete: "cascade",}).notNull(),
 
-  language_Id: uuid("language_id").references(() => languages.id),
+  languageId: uuid("language_id").references(() => language.id, {onDelete: "cascade",}).notNull(),
 
   quality: streamQualityEnum("quality").notNull(),
 

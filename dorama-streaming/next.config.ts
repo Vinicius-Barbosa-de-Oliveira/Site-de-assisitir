@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "pixabay.com",
+        hostname: "cdn.pixabay.com",
       },
       {
         protocol: "https",
@@ -18,6 +18,5 @@ const nextConfig: NextConfig = {
     ],
   },
 };
-
 
 export default nextConfig;

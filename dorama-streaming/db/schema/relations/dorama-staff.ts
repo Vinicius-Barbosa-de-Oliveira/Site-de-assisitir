@@ -5,7 +5,7 @@ import {
     unique,
 } from "drizzle-orm/pg-core";
 import { dorama } from "../content/doramas";
-import { Staff } from "../content/staff";
+import { Staff } from "../content/staffs";
 
 export const staffEnum =
   pgEnum("staff_role", [
@@ -23,16 +23,16 @@ export const staffEnum =
 export const doramaStaff = pgTable("DoramaStaff", {
     id: uuid("id").primaryKey().defaultRandom(),
 
-    dorama_Id: uuid("doramaId").references(() => dorama.id, {onDelete: "cascade"}),
+    doramaId: uuid("doramaId").references(() => dorama.id, {onDelete: "cascade"}),
 
-    staff_Id: uuid("staffId").references(() => Staff.id, {onDelete: "cascade"}),
+    staffId: uuid("staffId").references(() => Staff.id, {onDelete: "cascade"}),
 
     role: staffEnum("staff_role").notNull(),
 },
     (table) => ({
         uniqueDoramaStaff: unique().on(
-            table.dorama_Id,
-            table.staff_Id,
+            table.doramaId,
+            table.staffId,
             table.role
         ),
     })

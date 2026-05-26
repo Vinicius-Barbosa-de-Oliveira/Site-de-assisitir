@@ -6,15 +6,15 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
-import { seasons } from "./seasons";
+import { season } from "./seasons";
 import { images } from "./images";
 
-export const episodes =
-  pgTable("Episode", {
+export const episode =
+  pgTable("episode", {
 
     id: uuid("id").primaryKey().defaultRandom(),
 
-    season_Id: uuid("season_id").references(() => seasons.id, { onDelete: "cascade" }),
+    seasonId: uuid("season_id").references(() => season.id, { onDelete: "cascade" }).notNull(),
 
     number: integer("number").notNull(),
 

@@ -2,145 +2,123 @@ import { NextResponse } from "next/server";
 
 import { getServerSession } from "next-auth";
 
+import { and, eq } from "drizzle-orm";
+
 import { authOptions } from "@/lib/auth";
 
-import { db } from "@/lib/db";
+import { db } from "@/db/db";
+
+import {
+  favorites,
+  user,
+} from "@/db/schema";
 
 export async function POST(
   req: Request
 ) {
+  try {
+    const session =
+      await getServerSession(
+        authOptions
+      );
 
-  const session =
-    await getServerSession(
-      authOptions
-    );
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
 
-  if (!session?.user?.email) {
+    const body = await req.json();
 
-    return NextResponse.json(
-      {
-        error: "Unauthorized",
-      },
-      {
-        status: 401,
-      }
-    );
+    const { doramaId } = body;
 
-  }
+    if (!doramaId) {
+      return NextResponse.json(
+        {
+          error:
+            "doramaId is required",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
-  const body =
-    await req.json();
+    const currentUser =
+      await db.query.user.findFirst({
+        where: eq(
+          user.email,
+          session.user.email
+        ),
+      });
 
-  const user =
-    await prisma.user.findUnique({
+    if (!currentUser) {
+      return NextResponse.json(
+        {
+          error: "User not found",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
 
-      where: {
-        email:
-          session.user.email,
-      },
+    const existingFavorite =
+      await db.query.favorites.findFirst({
+        where: and(
+          eq(
+            favorites.userId,
+            currentUser.id
+          ),
 
+          eq(
+            favorites.doramaId,
+            doramaId
+          )
+        ),
+      });
+
+    // REMOVE FAVORITE
+    if (existingFavorite) {
+      await db
+        .delete(favorites)
+        .where(
+          eq(
+            favorites.id,
+            existingFavorite.id
+          )
+        );
+
+      return NextResponse.json({
+        favorited: false,
+      });
+    }
+
+    // ADD FAVORITE
+    await db.insert(favorites).values({
+      userId: currentUser.id,
+      doramaId,
     });
 
-  if (!user) {
-
-    return NextResponse.json(
-      {
-        error: "User not found",
-      },
-      {
-        status: 404,
-      }
-    );
-
-  }
-
-  const favorite =
-    await prisma.favorite.create({
-
-      data: {
-
-        userId: user.id,
-
-        dramaId:
-          body.dramaId,
-
-      },
-
+    return NextResponse.json({
+      favorited: true,
     });
-
-  return NextResponse.json(
-    favorite
-  );
-
-}
-
-export async function DELETE(
-  req: Request
-) {
-
-  const session =
-    await getServerSession(
-      authOptions
-    );
-
-  if (!session?.user?.email) {
+  } catch (error) {
+    console.error(error);
 
     return NextResponse.json(
       {
-        error: "Unauthorized",
+        error:
+          "Internal server error",
       },
       {
-        status: 401,
+        status: 500,
       }
     );
-
   }
-
-  const body =
-    await req.json();
-
-  const user =
-    await prisma.user.findUnique({
-
-      where: {
-        email:
-          session.user.email,
-      },
-
-    });
-
-  if (!user) {
-
-    return NextResponse.json(
-      {
-        error: "User not found",
-      },
-      {
-        status: 404,
-      }
-    );
-
-  }
-
-  await prisma.favorite.delete({
-
-    where: {
-
-      userId_dramaId: {
-
-        userId: user.id,
-
-        dramaId:
-          body.dramaId,
-
-      },
-
-    },
-
-  });
-
-  return NextResponse.json({
-    success: true,
-  });
-
 }

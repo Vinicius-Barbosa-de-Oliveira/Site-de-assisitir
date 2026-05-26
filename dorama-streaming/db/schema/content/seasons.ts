@@ -6,6 +6,7 @@ import {
     timestamp,
     pgEnum,
 } from "drizzle-orm/pg-core";
+import { dorama } from "./doramas";
 
 export const SeasonStatus = pgEnum("season_status", [
     "Em Lançamento",
@@ -15,12 +16,12 @@ export const SeasonStatus = pgEnum("season_status", [
     "Em breve",
 ]);
 
-export const seasons = pgTable("seasons", {
+export const season = pgTable("season", {
     id: uuid("id").primaryKey().defaultRandom(),
 
-    dorama_id: uuid("dorama_id").notNull(),
+    doramaId: uuid("dorama_id").references(() => dorama.id, { onDelete: "cascade" }).notNull(),
 
-    season_number: integer("season_number").notNull(),
+    number: integer("season_number").notNull(),
 
     title: text("title").notNull(),
 
@@ -28,7 +29,7 @@ export const seasons = pgTable("seasons", {
 
     status: SeasonStatus("status").notNull(),
 
-    created_at: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
 
-    number_of_episodes: integer("number_of_episodes").notNull(),    
+    qtdEpisodes: integer("number_of_episodes").notNull(),    
 });

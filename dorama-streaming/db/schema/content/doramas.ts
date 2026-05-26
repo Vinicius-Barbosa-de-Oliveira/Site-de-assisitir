@@ -2,21 +2,24 @@ import {
   pgTable,
   text,
   integer,
-  real,
   timestamp,
   time,
   uuid,
   pgEnum,
 } from "drizzle-orm/pg-core";
+
 import { images } from "./images";
 
-export const doramaStatus = pgEnum("dorama_status", [
+export const doramaStatus = pgEnum(
+  "dorama_status",
+  [
     "Em Lançamento",
     "Completo",
     "Em Hiato",
     "Cancelado",
     "Em breve",
-]);
+  ]
+);
 
 export const weekDayEnum = pgEnum(
   "week_day",
@@ -31,43 +34,68 @@ export const weekDayEnum = pgEnum(
   ]
 );
 
-export const dorama = pgTable("Dorama", {
+export const dorama = pgTable(
+  "dorama",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .defaultRandom(),
 
-  id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title")
+      .notNull(),
 
-  title: text("title").notNull(),
+    slug: text("slug")
+      .unique()
+      .notNull(),
 
-  slug: text("slug").unique().notNull(),
+    description: text("description")
+      .notNull(),
 
-  description: text("description").notNull(),
+    coverImageId: uuid(
+      "cover_image_id"
+    )
+      .references(() => images.id, {
+        onDelete: "set null",
+      })
+      .notNull(),
 
-  cover_Image: uuid("coverImage").references(() => images.id, {onDelete: "set null"}).notNull(),
+    bannerImageId: uuid(
+      "banner_image_id"
+    )
+      .references(() => images.id, {
+        onDelete: "set null",
+      })
+      .notNull(),
 
-  banner_Image: uuid("bannerImage").references(() => images.id, {onDelete: "set null"}).notNull(),
+    trailer: text("trailer_url"),
 
-  trailer_Url: text("trailerUrl"),
+    country: text("country")
+      .notNull(),
 
-  country: text("country").notNull(),
+    year: integer("year")
+      .notNull(),
 
-  year: integer("year").notNull(),
+    status: doramaStatus("status")
+      .notNull(),
 
-  status: doramaStatus("status").notNull(),
+    scheduleDay:
+      weekDayEnum("schedule_day"),
 
-  scheduleDay: weekDayEnum("scheduleDay"),
+    scheduleTime:
+      time("schedule_time"),
 
-  scheduleTime: time("scheduleTime"),
+    createdAt: timestamp(
+      "created_at"
+    ).defaultNow(),
 
-  created_At: timestamp("createdAt").defaultNow(),
+    updatedAt: timestamp(
+      "updated_at"
+    ).defaultNow(),
 
-  updated_At: timestamp("updatedAt").defaultNow(),
-
-  viewsCount: integer("views_count").default(0).notNull(),
-
-  favoritesCount: integer("favorites_count").default(0).notNull(),
-
-  ratingsCount: integer("ratings_count").default(0).notNull(),
-
-  averageRating: real("average_rating").default(0).notNull(),
-
-  watchTimeMinutes: integer("watch_time_minutes").default(0).notNull(),
-});
+    popularityScore: integer(
+      "popularity_score"
+    )
+      .default(0)
+      .notNull(),
+  }
+);

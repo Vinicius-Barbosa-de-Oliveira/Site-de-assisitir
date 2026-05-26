@@ -9,7 +9,7 @@ import {
 import { user } from "../core/users";
 import { device } from "../core/devices";
 
-export const sessions = pgTable("sessions", {
+export const session = pgTable("session", {
   id: uuid("id").primaryKey().defaultRandom(),
 
   userId: uuid("user_id").references(() => user.id, {onDelete: "cascade",}).notNull(),

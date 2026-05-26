@@ -4,29 +4,18 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
-import { users } from "../core/users";
-import { episodes } from "../content/episodes";
+import { user } from "../core/users";
+import { episode } from "../content/episodes";
 
 export const episodeViews = pgTable(
   "episode_views",
   {
-    id: uuid("id")
-      .primaryKey()
-      .defaultRandom(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
-    userId: uuid("user_id")
-      .references(() => users.id, {
-        onDelete: "set null",
-      }),
+    userId: uuid("user_id").references(() => user.id, {onDelete: "set null",}),
 
-    episodeId: uuid("episode_id")
-      .references(() => episodes.id, {
-        onDelete: "cascade",
-      })
-      .notNull(),
+    episodeId: uuid("episode_id").references(() => episode.id, {onDelete: "cascade",}).notNull(),
 
-    watchedAt: timestamp("watched_at")
-      .defaultNow()
-      .notNull(),
+    watchedAt: timestamp("watched_at").defaultNow().notNull(),
   }
 );

@@ -18,33 +18,17 @@ export const appealStatusEnum = pgEnum("appeal_status", [
 export const appeals = pgTable("appeals", {
   id: uuid("id").primaryKey().defaultRandom(),
 
-  punishmentId: uuid("punishment_id")
-    .references(() => punishments.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
+  punishmentId: uuid("punishment_id").references(() => punishments.id, {onDelete: "cascade",}).notNull(),
 
-  userId: uuid("user_id")
-    .references(() => user.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
+  userId: uuid("user_id").references(() => user.id, {onDelete: "cascade",}).notNull(),
 
-  reason: text("reason")
-    .notNull(),
+  reason: text("reason").notNull(),
 
-  status: appealStatusEnum("status")
-    .default("Pendente")
-    .notNull(),
+  status: appealStatusEnum("status").default("Pendente").notNull(),
 
-  reviewedBy: uuid("reviewed_by")
-    .references(() => user.id, {
-      onDelete: "set null",
-    }),
+  reviewedBy: uuid("reviewed_by").references(() => user.id, {onDelete: "set null",}),
 
   response: text("response"),
 
-  createdAt: timestamp("created_at")
-    .defaultNow()
-    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });

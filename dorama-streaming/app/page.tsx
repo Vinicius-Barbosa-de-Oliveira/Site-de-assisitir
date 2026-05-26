@@ -1,138 +1,175 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { MainContainer } from "@/components/layout/MainContainer";
 
-import Hero from "@/components/hero";
+import Navbar from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
 
-import TrendingSection
-from "@/sections/TrendingSection";
+import { HeroBanner } from "@/components/sections/HeroBanner";
+import { SectionRow } from "@/components/sections/SectionRow";
 
-import LatestEpisodes
-from "@/sections/LatestEpisodes";
+import { EpisodeCard } from "@/components/cards/EpisodeCard";
 
-import HomeSchedule
-from "@/sections/HomeSchedule";
+import DoramaCarousel from "@/components/sections/DoramaCarousel";
 
-import Popular
-from "@/sections/Popular";
+import { getFeaturedDorama } from "@/lib/queries/dorama/getFeaturedDorama";
 
-import Categories
-from "@/sections/Categories";
+import { getTrendingDoramas } from "@/lib/queries/dorama/getTrendingDoramas";
 
-import Recommended
-from "@/sections/Recommended";
+import { getLatestEpisodes } from "@/lib/queries/dorama/getLatestEpisodes";
 
-import ContinueWatchingSection
-from "@/sections/ContinueWatching";
+import { getPopularDoramas } from "@/lib/queries/dorama/getPopularDoramas";
 
-import { getServerSession }
-from "next-auth";
+import { getRecentlyAdded } from "@/lib/queries/dorama/getRecentlyAdded";
 
-import { authOptions }
-from "@/lib/auth";
+export default async function HomePage() {
+  // HERO
 
-import {
-  getAllDramas,
-} from "@/app/services/dramas";
+  const featured =
+    await getFeaturedDorama();
 
-import {
-  getLatestEpisodes,
-} from "@/app/services/episodes";
+  // SECTIONS
 
-import {
-  getContinueWatching,
-} from "@/app/services/users";
+  const trending =
+    await getTrendingDoramas();
 
-export default async function Home() {
+  const latestEpisodes =
+    await getLatestEpisodes();
 
-  const session =
-    await getServerSession(
-      authOptions
-    );
+  const popular =
+    await getPopularDoramas();
 
-  const [
-    dramas,
-    latestEpisodes,
-  ] = await Promise.all([
-
-    getAllDramas(),
-    getLatestEpisodes(),
-
-  ]);
-
-  let continueWatching:
-    any[] = [];
-
-  if (session?.user?.email) {
-
-    continueWatching =
-      await getContinueWatching(
-        session.user.email
-      );
-
-  }
+  const recent =
+    await getRecentlyAdded();
 
   return (
-
     <main
       className="
         min-h-screen
-        bg-[#07070A]
+        overflow-hidden
+        bg-[#0B0B0F]
         text-white
       "
     >
+      {/* NAVBAR */}
 
       <Navbar />
 
-      <div
-        className="
-          px-6
-          md:px-12
-          py-10
-          space-y-16
-        "
-      >
+      {/* HERO */}
 
-        <Hero drama={dramas[0]} />
-
-        <TrendingSection
-          dramas={dramas}
+      {featured && (
+        <HeroBanner
+          title={featured.title}
+          description={
+            featured.description
+          }
+          bannerUrl={
+            featured.bannerImage?.url || ""
+          }
+          coverUrl={
+            featured.coverImage?.url || ""
+          }
+          year={featured.year}
+          country={featured.country}
+          status={featured.status}
         />
+      )}
 
-        {continueWatching.length >
-          0 && (
+      {/* CONTENT */}
 
-          <ContinueWatchingSection
-            items={
-              continueWatching
-            }
+      <MainContainer>
+        <div className="space-y-20 py-16">
+          {/* TRENDING */}
+
+          <DoramaCarousel
+            title="🔥 Trending Now"
+            dramas={trending.map(
+              (item) => ({
+                id: item.id,
+                title: item.title,
+                slug: item.slug,
+                year: item.year,
+                popularityScore:
+                  item.popularityScore,
+                coverImage:
+                  item.coverImage,
+                status: item.status,
+              })
+            )}
           />
 
-        )}
+          {/* LATEST EPISODES */}
 
-        <Categories />
+          <SectionRow
+            title="📺 Últimos Episódios"
+            viewAllHref="/episodes/latest"
+          >
+            {latestEpisodes.map(
+              (episode) => (
+                <EpisodeCard
+                  key={episode.id}
+                  id={episode.id}
+                  title={episode.title}
+                  thumbnail={
+                    episode.thumbnail
+                      ?.url || ""
+                  }
+                  doramaTitle={
+                    episode.season.dorama
+                      .title
+                  }
+                  episodeNumber={
+                    episode.number
+                  }
+                  duration={
+                    episode.duration
+                  }
+                />
+              )
+            )}
+          </SectionRow>
 
-        <LatestEpisodes
-          dramas={latestEpisodes}
-        />
+          {/* POPULAR */}
 
-        <Recommended
-          dramas={dramas}
-        />
+          <DoramaCarousel
+            title="⭐ Popular"
+            dramas={popular.map(
+              (item) => ({
+                id: item.id,
+                title: item.title,
+                slug: item.slug,
+                year: item.year,
+                popularityScore:
+                  item.popularityScore,
+                coverImage:
+                  item.coverImage,
+                status: item.status,
+              })
+            )}
+          />
 
-        <Popular
-          dramas={dramas}
-        />
+          {/* RECENT */}
 
-        <HomeSchedule
-          dramas={dramas}
-        />
+          <DoramaCarousel
+            title="🆕 Adicionados Recentemente"
+            dramas={recent.map(
+              (item) => ({
+                id: item.id,
+                title: item.title,
+                slug: item.slug,
+                year: item.year,
+                popularityScore:
+                  item.popularityScore,
+                coverImage:
+                  item.coverImage,
+                status: item.status,
+              })
+            )}
+          />
+        </div>
+      </MainContainer>
 
-      </div>
+      {/* FOOTER */}
 
       <Footer />
-
     </main>
-
   );
-
 }

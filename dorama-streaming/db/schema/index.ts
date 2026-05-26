@@ -5,22 +5,19 @@ export * from "./core/devices";
 
 // content
 export * from "./content/doramas";
+export * from "./content/seasons";
 export * from "./content/episodes";
 export * from "./content/genres";
 export * from "./content/images";
-export * from "./content/seasons";
 export * from "./content/stream";
-export * from "./content/staff";
+export * from "./content/staffs";
 
 // community
+export * from "./community/chats";
 export * from "./community/comments";
-//export * from "./community/conversations";
-//export * from "./community/message-attachments";
 export * from "./community/messages";
+//export * from "./community/message-attachments";
 export * from "./community/notifications";
-export * from "./community/posts";
-//export * from "./community/post-images";
-//export * from "./community/post-tags"
 
 // moderation
 export * from "./moderation/reports";
@@ -31,12 +28,9 @@ export * from "./moderation/punishments";
 
 //relationships
 export * from "./relations/comment-likes";
-export * from "./relations/post-likes";
-//export * from "./relations/user-friends";
 export * from "./relations/dorama-genres";
 export * from "./relations/dorama-staff";
 export * from "./relations/episode_views";
-export * from "./relations/post-likes";
 export * from "./relations/user-achievements";
 export * from "./relations/user-badges";
 export * from "./relations/user-notifications";
@@ -53,3 +47,18 @@ export * from "./system/search-history";
 export * from "./watch/watching";
 export * from "./watch/favorites";
 export * from "./watch/ratings";
+
+export * from "@/db/relations/dorama-relations";
+export * from "@/db/relations/seasons-relations";
+export * from "@/db/relations/episodes-relations";
+export * from "@/db/relations/stream.relations";
+export * from "@/db/relations/images.relations";
+export * from "@/db/relations/doramaGenresRelations";
+export * from "@/db/relations/genreRelations";
+export * from "@/db/relations/favorites";
+export * from "@/db/relations/userRelations";
+export * from "@/db/relations/watchingRelations";
+
+
+//export * from "@/db/relations/";
+

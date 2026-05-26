@@ -6,7 +6,7 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
-export const notifications = pgTable("notifications", {
+export const notification = pgTable("notification", {
   id: uuid("id").primaryKey().defaultRandom(),
 
   title: text("title")

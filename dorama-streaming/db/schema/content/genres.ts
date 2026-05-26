@@ -4,7 +4,7 @@ import {
   text,
 } from "drizzle-orm/pg-core";
 
-export const genres =
+export const genre =
   pgTable("Genre", {
 
     id: uuid("id").primaryKey().defaultRandom(),

@@ -5,20 +5,20 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 
-import { episodestreams } from "../content/stream";
-import { languages } from "../system/languages";
+import { stream } from "../content/stream";
+import { language } from "../system/languages";
 
 export const subtitles = pgTable("subtitles", {
   id: uuid("id").primaryKey().defaultRandom(),
 
   streamId: uuid("stream_id")
-    .references(() => episodestreams.id, {
+    .references(() => stream.id, {
       onDelete: "cascade",
     })
     .notNull(),
 
   languageId: uuid("language_id")
-    .references(() => languages.id)
+    .references(() => language.id)
     .notNull(),
 
   url: text("url").notNull(),

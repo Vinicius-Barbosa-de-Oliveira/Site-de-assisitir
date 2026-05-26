@@ -7,7 +7,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { images } from "../content/images";
 
-export const roleEnum =
+export const userEnum =
   pgEnum("Role", [
     "USER",
     "ADMIN",
@@ -25,6 +25,8 @@ export const user =
 
     id: uuid("id").primaryKey().defaultRandom(),
 
+    userName: text("user_name").unique().notNull(),
+
     name: text("name").notNull(),
 
     email: text("email").unique().notNull(),
@@ -35,8 +37,8 @@ export const user =
 
     banner: uuid("banner").references(() => images.id, {onDelete: "set null",}),
 
-    role: roleEnum("role").default("USER"),
+    role: userEnum("role").default("USER"),
 
-    createdAt: timestamp("createdAt").defaultNow(),
+    createdAt: timestamp("created_At").defaultNow(),
 
   });

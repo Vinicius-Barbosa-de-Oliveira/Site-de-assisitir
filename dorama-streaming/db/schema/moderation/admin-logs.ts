@@ -20,19 +20,13 @@ export const adminLogActionEnum = pgEnum("admin_log_action", [
 export const adminLogs = pgTable("admin_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
 
-  adminId: uuid("admin_id")
-    .references(() => user.id, {
-      onDelete: "set null",
-    }),
+  adminId: uuid("admin_id").references(() => user.id, {onDelete: "set null",}),
 
   targetId: uuid("target_id"),
 
-  action: adminLogActionEnum("action")
-    .notNull(),
+  action: adminLogActionEnum("action").notNull(),
 
   details: text("details"),
 
-  createdAt: timestamp("created_at")
-    .defaultNow()
-    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });

@@ -13,7 +13,7 @@ import { language } from "./languages";
 export const Settings = pgTable("settings", {
   userId: uuid("user_id").primaryKey().references(() => user.id, {onDelete: "cascade",}),
 
-  language: uuid("language").references(() => language.id, {onDelete: "set null",}),
+  languageId: uuid("language").references(() => language.id, {onDelete: "set null",}),
 
   theme: text("theme").default("dark").notNull(),
 

@@ -1,487 +1,369 @@
-import Link from "next/link";
+// app/schedule/page.tsx
 
+import Navbar from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
+
+import { db } from "@/db/db";
+
+import Link from "next/link";
 import Image from "next/image";
 
-import Navbar from "@/components/Navbar";
+export default async function SchedulePage() {
+  const dramas = await db.query.dorama.findMany({
+    where: (dorama, { eq }) =>
+      eq(dorama.status, "Em Lançamento"),
 
-import Footer from "@/components/Footer";
+    with: {
+      coverImage: true,
+      bannerImage: true,
+    },
 
-import {
-  getScheduleDramas,
-} from "@/app/services/dramas";
+    orderBy: (dorama, { desc }) => [
+      desc(dorama.createdAt),
+    ],
+  });
 
-const weekDays = [
-  "Segunda",
-  "Terça",
-  "Quarta",
-  "Quinta",
-  "Sexta",
-  "Sábado",
-  "Domingo",
-];
-
-export default async function
-SchedulePage() {
-
-  const dramas =
-    await getScheduleDramas();
-
-  // ORGANIZA POR DIA
-
-  const dramasByDay =
-    weekDays.reduce(
-      (acc, day) => {
-
-        acc[day] =
-          dramas.filter(
-            (drama) =>
-              drama.scheduleDay ===
-              day
-          );
-
-        return acc;
-
-      },
-      {} as Record<
-        string,
-        typeof dramas
-      >
-    );
+  const weekDays = [
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
+    "Domingo",
+  ];
 
   return (
-
-    <main
-      className="
-        bg-[#0F0F14]
-        min-h-screen
-        text-white
-      "
-    >
-
+    <main className="min-h-screen bg-[#0B0B0F] text-white overflow-hidden">
       <Navbar />
 
       {/* HERO */}
 
-      <section
-        className="
-          relative
-          overflow-hidden
-          border-b
-          border-white/10
-        "
-      >
+      <section className="relative overflow-hidden border-b border-white/5">
+        {/* BACKGROUND */}
+
+        {dramas[0]?.bannerImage?.url && (
+          <Image
+            src={dramas[0].bannerImage.url}
+            alt={dramas[0].title}
+            fill
+            priority
+            className="object-cover opacity-15"
+          />
+        )}
+
+        {/* OVERLAY */}
+
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0F]/40 via-[#0B0B0F]/90 to-[#0B0B0F]" />
+
+        {/* GLOW */}
 
         <div
           className="
             absolute
-            inset-0
-            bg-linear-to-r
-            from-purple-500/20
-            to-transparent
+            top-0
+            left-1/2
+            -translate-x-1/2
+            w-[700px]
+            h-[350px]
+            bg-purple-500/20
+            blur-[140px]
           "
         />
 
-        <div
-          className="
-            max-w-7xl
-            mx-auto
-            px-6
-            py-24
-            relative
-            z-10
-          "
-        >
+        {/* CONTENT */}
 
-          <span
-            className="
-              bg-purple-500
-              px-4
-              py-2
-              rounded-full
-              text-sm
-            "
-          >
-            lançamentos da semana
-          </span>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+          <div className="max-w-3xl">
+            {/* BADGE */}
 
-          <h1
-            className="
-              text-6xl
-              font-black
-              mt-6
-            "
-          >
-            Calendário
-          </h1>
+            <div
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-full
+                border
+                border-purple-500/20
+                bg-purple-500/10
+                px-4
+                py-2
+                text-sm
+                text-purple-300
+                backdrop-blur-xl
+              "
+            >
+              <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
 
-          <p
-            className="
-              text-zinc-400
-              text-lg
-              mt-6
-              max-w-2xl
-            "
-          >
-            Fique por dentro
-            dos próximos episódios
-            que serão lançados
-          </p>
+              Atualizações Semanais
+            </div>
 
+            {/* TITLE */}
+
+            <h1
+              className="
+                mt-6
+                text-5xl
+                md:text-6xl
+                font-black
+                tracking-tight
+                leading-tight
+              "
+            >
+              Calendário de
+              <span className="text-purple-500">
+                {" "}
+                Lançamentos
+              </span>
+            </h1>
+
+            {/* DESCRIPTION */}
+
+            <p
+              className="
+                mt-6
+                text-zinc-400
+                text-lg
+                leading-relaxed
+                max-w-2xl
+              "
+            >
+              Acompanhe os doramas que estão
+              atualmente em lançamento e veja
+              quais episódios chegam a cada dia
+              da semana.
+            </p>
+
+            {/* STATS */}
+
+            <div className="flex flex-wrap gap-4 mt-10">
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-white/10
+                  bg-white/5
+                  px-5
+                  py-4
+                  backdrop-blur-xl
+                "
+              >
+                <p className="text-2xl font-black">
+                  {dramas.length}
+                </p>
+
+                <span className="text-sm text-zinc-400">
+                  Em lançamento
+                </span>
+              </div>
+
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-white/10
+                  bg-white/5
+                  px-5
+                  py-4
+                  backdrop-blur-xl
+                "
+              >
+                <p className="text-2xl font-black">
+                  7
+                </p>
+
+                <span className="text-sm text-zinc-400">
+                  Dias da semana
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-
       </section>
 
-      {/* CALENDAR */}
+      {/* CONTENT */}
 
-      <section
-        className="
-          max-w-7xl
-          mx-auto
-          px-6
-          py-16
-        "
-      >
+      <section className="max-w-7xl mx-auto px-6 py-14 space-y-14">
+        {weekDays.map((day) => {
+          const dramasOfDay =
+            dramas.filter(
+              (dorama) =>
+                dorama.scheduleDay === day
+            );
 
-        <div className="space-y-20">
+          return (
+            <div key={day}>
+              {/* HEADER */}
 
-          {weekDays.map((day) => {
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-1.5 h-8 rounded-full bg-purple-500" />
 
-            const dayDramas =
-              dramasByDay[day];
+                <h2 className="text-2xl md:text-3xl font-black">
+                  {day}
+                </h2>
 
-            if (
-              !dayDramas ||
-              dayDramas.length === 0
-            ) {
-              return null;
-            }
+                <span className="text-sm text-zinc-500">
+                  (
+                  {dramasOfDay.length}
+                  )
+                </span>
 
-            return (
+                <div className="flex-1 h-px bg-white/10" />
+              </div>
 
-              <div key={day}>
+              {/* GRID */}
 
-                {/* DAY */}
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-4
-                    mb-10
-                  "
-                >
-
-                  <div
-                    className="
-                      w-3
-                      h-12
-                      bg-purple-500
-                      rounded-full
-                    "
-                  />
-
-                  <h2
-                    className="
-                      text-4xl
-                      font-bold
-                    "
-                  >
-                    {day}
-                  </h2>
-
-                </div>
-
-                {/* GRID */}
-
+              {dramasOfDay.length > 0 ? (
                 <div
                   className="
                     grid
-                    sm:grid-cols-2
-                    lg:grid-cols-3
-                    xl:grid-cols-4
-                    gap-8
-                    items-stretch
+                    grid-cols-2
+                    sm:grid-cols-3
+                    md:grid-cols-4
+                    lg:grid-cols-5
+                    xl:grid-cols-6
+                    gap-5
                   "
                 >
-
-                  {dayDramas.map(
-                    (drama) => {
-
-                      const latestEpisode =
-                        drama.episodes?.[
-                          drama
-                            .episodes
-                            .length - 1
-                        ];
-
-                      return (
-
-                        <Link
-                          key={drama.id}
-                          href={`/drama/${drama.slug}`}
-                          className="group h-full"
+                  {dramasOfDay.map(
+                    (dorama) => (
+                      <Link
+                        key={dorama.id}
+                        href={`/dorama/${dorama.slug}`}
+                        className="group"
+                      >
+                        <div
+                          className="
+                            overflow-hidden
+                            rounded-2xl
+                            border
+                            border-white/5
+                            bg-[#18181F]
+                            transition-all
+                            duration-300
+                            hover:-translate-y-1
+                            hover:border-purple-500/30
+                          "
                         >
+                          {/* IMAGE */}
 
-                          <div
-                            className="
-                              bg-[#18181F]
-                              rounded-3xl
-                              overflow-hidden
-                              border
-                              border-white/5
-                              hover:border-purple-500/20
-                              transition
-                              h-full
-                              flex
-                              flex-col
-                            "
-                          >
-
-                            {/* IMAGE */}
+                          <div className="relative aspect-[2/3] overflow-hidden">
+                            <Image
+                              src={
+                                dorama
+                                  .coverImage
+                                  ?.url ||
+                                "/placeholder.jpg"
+                              }
+                              alt={
+                                dorama.title
+                              }
+                              fill
+                              className="
+                                object-cover
+                                transition-transform
+                                duration-500
+                                group-hover:scale-105
+                              "
+                            />
 
                             <div
                               className="
-                                relative
-                                h-80
-                                overflow-hidden
-                                shrink-0
+                                absolute
+                                inset-0
+                                bg-gradient-to-t
+                                from-black/80
+                                via-transparent
+                                to-transparent
                               "
-                            >
+                            />
 
-                              <Image
-                                src={
-                                  drama.coverImage
-                                }
-                                alt={
-                                  drama.title
-                                }
-                                fill
-                                className="
-                                  object-cover
-                                  group-hover:scale-110
-                                  transition
-                                  duration-500
-                                "
-                              />
-
-                              <div
-                                className="
-                                  absolute
-                                  inset-0
-                                  bg-linear-to-t
-                                  from-black
-                                  via-black/20
-                                  to-transparent
-                                "
-                              />
-
-                              {/* TIME */}
-
-                              <div
-                                className="
-                                  absolute
-                                  top-4
-                                  right-4
-                                  bg-purple-500
-                                  px-4
-                                  py-2
-                                  rounded-full
-                                  text-sm
-                                  font-bold
-                                "
-                              >
-
-                                {
-                                  drama.scheduleTime
-                                }
-
-                              </div>
-
-                              {/* EP */}
-
-                              {latestEpisode && (
-
-                                <div
-                                  className="
-                                    absolute
-                                    bottom-4
-                                    left-4
-                                  "
-                                >
-
-                                  <span
-                                    className="
-                                      bg-black/50
-                                      backdrop-blur-xl
-                                      px-4
-                                      py-2
-                                      rounded-full
-                                      text-sm
-                                    "
-                                  >
-
-                                    EP
-                                    {" "}
-                                    {
-                                      latestEpisode.number
-                                    }
-
-                                  </span>
-
-                                </div>
-
-                              )}
-
-                            </div>
-
-                            {/* CONTENT */}
+                            {/* BADGE */}
 
                             <div
                               className="
-                                p-6
-                                flex
-                                flex-col
-                                flex-1
+                                absolute
+                                top-3
+                                right-3
+                                rounded-full
+                                bg-purple-500
+                                px-2.5
+                                py-1
+                                text-[10px]
+                                font-bold
                               "
                             >
-
-                              <div
-                                className="
-                                  flex
-                                  items-start
-                                  justify-between
-                                  gap-4
-                                "
-                              >
-
-                                <div
-                                  className="
-                                    flex-1
-                                  "
-                                >
-
-                                  <h3
-                                    className="
-                                      text-2xl
-                                      font-bold
-                                      line-clamp-2
-                                      min-h-16
-                                    "
-                                  >
-
-                                    {drama.title}
-
-                                  </h3>
-
-                                  <p
-                                    className="
-                                      text-zinc-400
-                                      mt-2
-                                      text-sm
-                                    "
-                                  >
-
-                                    {
-                                      drama.country
-                                    }
-                                    {" • "}
-                                    {
-                                      drama.year
-                                    }
-
-                                  </p>
-
-                                </div>
-
-                                <div
-                                  className="
-                                    bg-purple-500/20
-                                    text-purple-400
-                                    px-3
-                                    py-1
-                                    rounded-xl
-                                    text-sm
-                                    font-semibold
-                                    shrink-0
-                                  "
-                                >
-
-                                  ⭐ {drama.rating}
-
-                                </div>
-
-                              </div>
-
-                              <div
-                                className="
-                                  flex
-                                  flex-wrap
-                                  gap-2
-                                  mt-5
-                                "
-                              >
-
-                                <span
-                                  className="
-                                    bg-black/20
-                                    px-3
-                                    py-2
-                                    rounded-xl
-                                    text-sm
-                                    text-zinc-300
-                                  "
-                                >
-
-                                  {drama.status}
-
-                                </span>
-
-                              </div>
-
-                              <p
-                                className="
-                                  text-zinc-400
-                                  text-sm
-                                  leading-7
-                                  mt-5
-                                  line-clamp-3
-                                  min-h-21
-                                "
-                              >
-
-                                {
-                                  drama.description
-                                }
-
-                              </p>
-
+                              NOVO
                             </div>
-
                           </div>
 
-                        </Link>
+                          {/* INFO */}
 
-                      );
+                          <div className="p-4">
+                            <h3
+                              className="
+                                font-bold
+                                text-sm
+                                line-clamp-1
+                              "
+                            >
+                              {dorama.title}
+                            </h3>
 
-                    }
+                            <div
+                              className="
+                                flex
+                                items-center
+                                justify-between
+                                mt-2
+                                text-xs
+                                text-zinc-400
+                              "
+                            >
+                              <span>
+                                {
+                                  dorama.year
+                                }
+                              </span>
+
+                              <span className="text-yellow-300">
+                                ★{" "}
+                                {Number(
+                                  dorama.popularityScore
+                                ).toFixed(
+                                  1
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    )
                   )}
-
                 </div>
-
-              </div>
-
-            );
-
-          })}
-
-        </div>
-
+              ) : (
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-white/5
+                    bg-[#18181F]
+                    p-8
+                    text-center
+                  "
+                >
+                  <p className="text-zinc-500">
+                    Nenhum lançamento
+                    neste dia.
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </section>
 
       <Footer />
-
     </main>
-
   );
-
 }

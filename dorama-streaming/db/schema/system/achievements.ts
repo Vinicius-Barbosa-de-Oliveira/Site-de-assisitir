@@ -9,21 +9,13 @@ import {
 export const achievements = pgTable("achievements", {
   id: uuid("id").primaryKey().defaultRandom(),
 
-  name: text("name")
-    .unique()
-    .notNull(),
+  name: text("name").unique().notNull(),
 
   description: text("description"),
 
-  requiredProgress: integer("required_progress")
-    .default(1)
-    .notNull(),
+  requiredProgress: integer("required_progress").default(1).notNull(),
 
-  rewardXp: integer("reward_xp")
-    .default(0)
-    .notNull(),
+  rewardXp: integer("reward_xp").default(0).notNull(),
 
-  createdAt: timestamp("created_at")
-    .defaultNow()
-    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });

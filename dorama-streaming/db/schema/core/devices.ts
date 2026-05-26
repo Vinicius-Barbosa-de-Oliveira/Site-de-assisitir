@@ -11,13 +11,10 @@ export const device = pgTable("device", {
   id: uuid("id").primaryKey().defaultRandom(),
 
   userId: uuid("user_id")
-    .references(() => user.id, {
-      onDelete: "cascade",
-    })
+    .references(() => user.id, { onDelete: "cascade" })
     .notNull(),
 
-  deviceName: text("device_name")
-    .notNull(),
+  deviceName: text("device_name").notNull(),
 
   deviceModel: text("device_model"),
 
@@ -25,11 +22,11 @@ export const device = pgTable("device", {
 
   browser: text("browser"),
 
-  firstSeenAt: timestamp("first_seen_at")
-    .defaultNow()
-    .notNull(),
+  firstSeenAt: timestamp("first_seen_at", {
+    withTimezone: true,
+  }).defaultNow().notNull(),
 
-  lastUsedAt: timestamp("last_used_at")
-    .defaultNow()
-    .notNull(),
+  lastUsedAt: timestamp("last_used_at", {
+    withTimezone: true,
+  }).defaultNow().notNull(),
 });

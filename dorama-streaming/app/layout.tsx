@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 
-import SessionProvider from "@/providers/SessionProvider";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "Dorama Streaming",
-  description: "Streaming de Doramas",
+  description: "Assista seus doramas favoritos",
 };
 
 export default function RootLayout({
@@ -14,19 +14,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
-    <html lang="pt-BR">
-
-      <body>
-
-        <SessionProvider>
+    <html
+      lang="pt-BR"
+      suppressHydrationWarning
+    >
+      <body suppressHydrationWarning>
+        <Providers>
           {children}
-        </SessionProvider>
-
+        </Providers>
       </body>
-
     </html>
   );
-
 }

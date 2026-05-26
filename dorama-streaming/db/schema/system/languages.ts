@@ -13,8 +13,8 @@ export const language = pgTable("Language", {
 
     code: text("code").unique().notNull(),
 
-    createdAt: timestamp("createdAt").defaultNow(),
+    createdAt: timestamp("created_At").defaultNow(),
 
-    updatedAt: timestamp("updatedAt").defaultNow(),
+    updatedAt: timestamp("updated_At").defaultNow(),
 
 });
